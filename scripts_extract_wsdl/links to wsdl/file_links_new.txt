@@ -1,0 +1,105 @@
+http://orws2.isima.fr/Recuperation_donnee/Recuperation_donnee?WSDL,./wsdl_files/Shortest path computation.xml
+http://wsf.cdyne.com/WeatherWS/Weather.asmx?WSDL,./wsdl_files/Weather.xml
+http://183.82.134.194:5050/MyWs/EmailCheckService?WSDL,./wsdl_files/EmailCheckService.xml
+http://www.bccs.uni.no/~pve002/wsdls/ebi-mafft.wsdl,./wsdl_files/JDispatcherService.xml
+http://www.thomas-bayer.com/axis2/services/BLZService?wsdl,./wsdl_files/BLZService.xml
+http://www.kirupafx.com/WebService/TopMovies.asmx?WSDL,./wsdl_files/TopMovies.xml
+http://www.esendex.com/secure/messenger/soap/SendService.asmx?wsdl,./wsdl_files/SendService.xml
+http://constantine.lirmm.fr:8080/CentileParSaisieWS_GFV2/CentileWSService?wsdl,./wsdl_files/CentileWSService.xml
+http://www.reportingsales.com/DeFactoSF1.asmx?WSDL,./wsdl_files/DeFactoSF1.xml
+https://www.azh-portal.de/eKVWAR/services/BswSchnittstelle2?wsdl,./wsdl_files/BswSchnittstelle2.xml
+http://www.webservicex.com/globalweather.asmx?WSDL,./wsdl_files/GlobalWeather.xml
+http://soaptest.parasoft.com/calculator.wsdl,./wsdl_files/Calculator.xml
+http://ws.cdyne.com/ip2geo/ip2geo.asmx?wsdl,./wsdl_files/IP2Geo.xml
+http://4.funcksi.appspot.com/HApi2Service.wsdl,./wsdl_files/HApi2Service.xml
+http://sciencesoft.at/services/latex?wsdl,./wsdl_files/latex.xml
+http://recursos.atikasoft.com.ec:8888/ServiceSRI?wsdl,./wsdl_files/ServiceSRI.xml
+http://recursos.atikasoft.com.ec:8888/ServiceCORPAIRE?wsdl,./wsdl_files/ServiceCORPAIRE.xml
+http://recursos.atikasoft.com.ec:8888/ServiceSuperBan?wsdl,./wsdl_files/ServiceSuperBan.xml
+http://recursos.atikasoft.com.ec:8888/ServiceDNT?wsdl,./wsdl_files/ServiceDNT.xml
+http://gomobile.vn:8080/vmg/MOReceiver?wsdl,./wsdl_files/MOReceiverService.xml
+https://clarisdev.kdhe.state.ks.us:8443/CLARIS_CAPP_WS/services/PPIN001?wsdl,./wsdl_files/PPIN001.xml
+http://webservices.amazon.com/AWSECommerceService/AWSECommerceService.wsdl,./wsdl_files/AWSECommerceService.xml
+http://204.236.237.245:8080/sonata-services/services/SecurityServicePort?wsdl,./wsdl_files/SecurityService.xml
+http://204.236.237.245:8080/sonata-services/services/RepairService?wsdl,./wsdl_files/RepairService.xml
+http://204.236.237.245:8080/sonata-services/services/AlertService?wsdl,./wsdl_files/AlertService.xml
+http://41.224.247.199/sigmabookingws/sigmahotelws.asmx?WSDL,./wsdl_files/SigmaHotelWS.xml
+http://www.biess.fin.ec:8080/BiessShopService/OrdenWSService?wsdl,./wsdl_files/OrdenWSService.xml
+http://swstest.ilienonline.com/searchservice/servicev2.asmx?wsdl,./wsdl_files/ILien Online Services.xml
+http://ops.epo.org/wsdl/ops.wsdl,./wsdl_files/OPSBiblioRetrievalService.xml
+http://expertvictoria.no-ip.org:8080/turquesaService/turquesaService?wsdl,./wsdl_files/turquesaService.xml
+http://203.193.153.4/CASService/personService?wsdl,./wsdl_files/PersonServiceImplService.xml
+http://testmap.zsl.com/ePos_WFMS_WS_RPC/ePosWFMSWS.asmx?wsdl,./wsdl_files/ePosWFMSWS.xml
+http://www.consultacpf.com/webservices/producao/cdc.asmx?wsdl,service_33
+http://servicios.imflores.gub.uy/RecaudaWebTest/servlet/awstributos?wsdl,./wsdl_files/wstributos.xml
+http://www.petermichaeltest.de/soa/wsdl/Leitwegbestimmung.wsdl,./wsdl_files/Leitwegbestimmung.xml
+http://124.158.2.50:9080/WebServices/services/GetwayServices/wsdl/GetwayServices.wsdl,./wsdl_files/GetwayServicesService.xml
+https://test6.mijnsom.nl/top6/services/cxf/mobile?wsdl,./wsdl_files/MobileService.xml
+http://demo.vit2print.com/IndustryService.wsdl,./wsdl_files/IndustryService.xml
+http://www2.soriana.com/integracion/recibecfd/wseDocRecibo.asmx?wsdl,./wsdl_files/wseDocRecibo.xml
+http://www.cadec-online.com/API.asmx?WSDL,./wsdl_files/Computer Aided Design Environment for Composites.xml
+http://epson.xsa.com.mx/xsamanager/services/FileReceiverService?wsdl,./wsdl_files/FileReceiverService.xml
+https://val-code.iddi.com/IdNetWebServices/mywsdl.wsdl,./wsdl_files/IRandoWebService.xml
+http://prubsg.informatica.gob.ec:8080/StiBsgFirmaArchivo_Service?wsdl,./wsdl_files/FirmaArchivo_Service.xml
+http://comprix.somee.com/ComprixWS.asmx?WSDL,./wsdl_files/ComprixWS.xml
+http://webservice.grepcep.com/GrepCepWS/services/GrepCep?wsdl,./wsdl_files/GrepCep.xml
+http://footballpool.dataaccess.eu/data/info.wso?WSDL,./wsdl_files/Info.xml
+http://online.ecba.cz/services/strednimorava/ecbaservice.asmx?WSDL,./wsdl_files/EcbaService.xml
+https://test.paxfacturacion.com.mx/webservices/wcfRecepcionASMX.asmx?WSDL,./wsdl_files/wcfRecepcionASMX.xml
+http://unstable.networkrailvehicles.co.uk/nsoap/S12/Status.php?wsdl,./wsdl_files/IStatusService.xml
+https://www.azh-portal.de/eKVWAR/services/BswSchnittstelle?wsdl,./wsdl_files/BswSchnittstelle.xml
+http://centralboss.grupocetec.net/datosalumno.asmx?wsdl,./wsdl_files/DatosAlumno.xml
+http://94.189.181.171:8080/axis2/services/IzboriTestService2?wsdl,./wsdl_files/PRIzborService.xml
+http://iotchet.ru:443/API/auth/?wsdl,./wsdl_files/AstralAuth.xml
+http://oyimpex.com/OyimpexSMS.asmx?WSDL,./wsdl_files/Oyimpex.xml
+http://cybergis.sdsc.edu:8080/opal2/services/LasCountService?wsdl,./wsdl_files/AppService.xml
+https://www.autofacilseguro.com.br/CardifWebServiceDS/services/AutofacilService?wsdl,./wsdl_files/AutofacilService.xml
+http://www.wins.or.kr/MyDBWebService/service.asmx?wsdl,./wsdl_files/DirectoryService.xml
+http://190.181.18.67:8080/WebServicesConsulta/ConsultaVehiculoAnh.jws?WSDL,./wsdl_files/ConsultaVehiculoAnh.xml
+http://41.226.251.195:8484/ContactManagement/ws/WebServiceCont?wsdl,./wsdl_files/ContactWsImpService.xml
+http://www.dataaccess.com/webservicesserver/textcasing.wso?WSDL,./wsdl_files/TextCasing.xml
+https://wsgw-teste.min-saude.pt:8000/PEM/RegistoPrescricaoMedicamentos/1.00?WSDL,./wsdl_files/registoprescricaomedicamentos_ep1.00.xml
+http://orws2.isima.fr/EssaiJavaWebService/EssaiJavaWebService?wsdl,./wsdl_files/VRP resolution.xml
+https://www.unifiedsoftware.co.uk/services/bankvaluk/bankvalidate.php?wsdl,./wsdl_files/bankvalidate.xml
+http://peopleask.ooz.ie/soap.wsdl,./wsdl_files/PeopleAsk - Google Questions Service.xml
+http://www.webservicex.com/stockquote.asmx?WSDL,./wsdl_files/StockQuote.xml
+http://190.242.42.47:9181/GBH/services/CheckIn?wsdl,./wsdl_files/CheckIn.xml
+http://aspalliance.com/quickstart/aspplus/samples/services/MathService/VB/MathService.asmx?wsdl,./wsdl_files/MathService.xml
+http://www.wssdemo.com/_vti_bin/Lists.asmx?wsdl,./wsdl_files/Lists - brp.xml
+http://trial.serviceobjects.com/av/AddressValidate.asmx?WSDL,./wsdl_files/DOTSAddressValidate.xml
+http://101.212.33.13:6060/Calc/CalculatorService?wsdl,./wsdl_files/CalculatorService.xml
+http://204.236.237.245:8080/sonata-services/services/AssetService?wsdl,./wsdl_files/AssetService.xml
+http://uat4.fivium.co.uk/engdev8/fox/dev8/PLANNING_APPLICATION_WS?WSDL,./wsdl_files/Fox Open Demo Web Service.xml
+http://www.gsd.inesc-id.pt/~jpbarreto/Hello.wsdl,./wsdl_files/HelloService.xml
+https://demo.docusign.net/api/3.0/api.asmx?WSDL,./wsdl_files/Docusign.xml
+http://www.xignite.com/xScreener.asmx?WSDL ,./wsdl_files/XigniteScreenerv1.xml
+http://200.142.205.139:8082/sipvig/services/FuncionarioService?wsdl,./wsdl_files/FuncionarioService.xml
+http://14.99.146.32:9080/MuruWebService/services/HelloWS?wsdl,./wsdl_files/HelloWSService.xml
+http://www.currencyserver.de/webservice/currencyserverwebservice.asmx?WSDL,./wsdl_files/CurrencyServerWebService.xml
+http://www.jasongaylord.com/webservices/zipcodes.asmx?wsdl     ,./wsdl_files/ZipCodes.xml
+http://www-inf.int-evry.fr/cours/WebServices/TP_BPEL/files/PingPong.wsdl,./wsdl_files/PingPongService.xml
+http://www.wins.or.kr/MyWebService/service.asmx?wsdl,./wsdl_files/Service.xml
+http://www.ignyte.com/webservices/ignyte.whatsshowing.webservice/moviefunctions.asmx?wsdl,./wsdl_files/MovieInformation.xml
+http://www.arodar.com.ar/api/wsmotos.asmx?wsdl,./wsdl_files/wsmotos.xml
+http://81.35.22.132:8080/EjemploMaster/services/Invernadero?wsdl,./wsdl_files/Invernadero.xml
+http://servizisoa.avcp.it:8080/attestazioniWS_1.4/services/attestazioniSoa?wsdl,./wsdl_files/attestazioniSoa.xml
+http://shop.av.ru/soap/Azbukavkusa.php?wsdl,./wsdl_files/Azbukavkusa.xml
+http://203.196.90.36:12010/sjpermataservice-test/services/VoltrasPermataService?wsdl,./wsdl_files/VoltrasPermataService.xml
+http://108.161.129.223:48080/externaldb-trp-war/ShipmentStatusService?WSDL,./wsdl_files/ShipmentStatusService.xml
+https://finanzonline.bmf.gv.at/fon/services/FileUploadWSI/wsdl/FileUploadWSIService.wsdl,./wsdl_files/FileUploadWSIService.xml
+https://api.channeladvisor.com/ChannelAdvisorAPI/v7/AdminService.asmx?WSDL,./wsdl_files/AdminService.xml
+http://129.174.131.8:9006/GeoprocessingWS/services/Vector_Buffer_JTS?wsdl,./wsdl_files/Vector_Buffer_JTSService.xml
+http://premperhn.com/polling/cabei.php?wsdl,./wsdl_files/prueba.xml
+http://t320webservices.open.ac.uk/t320/services/HelloService?wsdl,./wsdl_files/HelloService.xml
+http://orws2.isima.fr:80/WebServiceRO/WebServiceROSoap?WSDL,./wsdl_files/SVG to PNG.xml
+http://orws2.isima.fr:80/WebServiceJobShop/WebServiceJobShop?WSDL,./wsdl_files/Scheduling problem resolution.xml
+http://handyapp.ru/fimi.wsdl,./wsdl_files/fimi.xml
+http://www.predic8.com:8080/crm/CustomerService?wsdl,./wsdl_files/CustomerService.xml
+http://www.predic8.com:8080/base/IDService?wsdl,./wsdl_files/IDService.xml
+http://www.predic8.com:8080/shop/ShopService?wsdl,./wsdl_files/ShopService.xml
+https://intuiz.altares.fr/axis2_V3.5/services/CallistoIdentiteObjectSecure?wsdl,./wsdl_files/CallistoIdentiteObjectSecure.xml
+http://sis-d.sermepa.es/TPV_PC/wsdl/SerClsEntradaTPVPCv6d0.wsdl,./wsdl_files/SerClsWSPeticionSOAPService.xml
+http://vms.ribarstvo.hr/ArcGIS/services/VMS_Alarmi_RAZVOJ/MapServer?wsdl,./wsdl_files/VMS_Alarmi_RAZVOJ_MapServer.xml
+http://nebulae.com.co/RecargacelAdmin-war/JAXWSFrontEndServices?wsdl,./wsdl_files/JAXWSFrontEndServices.xml
+https://esb.alfabank.kiev.ua:8243/services/Currency?wsdl,./wsdl_files/Currency.xml
+http://www.predic8.com:8080/material/ArticleService?wsdl,./wsdl_files/ArticleService.xml

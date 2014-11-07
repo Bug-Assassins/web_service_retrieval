@@ -1,0 +1,19 @@
+urls = $$('a'); for (url in urls) if(urls[url].href.search("ViewListing")!=-1) console.log ( urls[url].href ); 	   //For list 1
+	cut -f1 -d " " <links.txt>final.txt
+	python download_wsdl.py `cat final.txt|tr "\n" " "`
+
+
+
+<script> var urls=document.getElementsByTagName("a");for (url in urls) console.log ( urls[url].href );</script>		//For list 2
+	grep "WSDL" links.txt>temp.txt	
+	cut -f1 -d " " <temp.txt>final2.txt
+	python down_wsdl.py `cat final2.txt|tr "\n" " "`
+ 
+
+
+link= "http://www.webservicex.net/WS/WSDetails.aspx?CATID=1&WSID=??"
+	Iterating from 8 to 78 	
+	python d_psd 
+
+
+

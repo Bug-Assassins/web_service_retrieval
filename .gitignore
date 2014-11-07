@@ -1,0 +1,7 @@
+Reports/*
+owls/docs/*
+Web_Services_paper/*
+wsdl_data_set/*
+*~
+*.out
+*.in
