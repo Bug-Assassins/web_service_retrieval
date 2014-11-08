@@ -1,6 +1,6 @@
 #!/bin/bash
 # The path to the folder which has the *.data files of all the categories
-DATA_PATH="./keywords";
+DATA_PATH="./keywords/$2";
 
 sen=$1;
 sen="`echo $sen | tr -s ' ' | tr ' ' '\n' | sort | uniq | tr '\n' ' '`"
@@ -17,4 +17,4 @@ for i in {0..5..1}
 do
     echo -e "${vector[$i]} \c";
 done
-echo -e "${vector[6]}";
+echo -e "${vector[6]}\c";

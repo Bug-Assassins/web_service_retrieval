@@ -43,7 +43,7 @@ if __name__=="__main__":
                     print "Error Input (Key): " + fname
 
         inp_string = " ".join(set(in_str))
-        inp_vec = subprocess.check_output(['bash index_unit.sh', inp_string])
+        inp_vec = subprocess.check_output(['./index_unit.sh', inp_string, "input"])
 
         keyerr = 0
         for out in profile_out :
@@ -65,8 +65,10 @@ if __name__=="__main__":
 
         out_string = " ".join(set(op_str))
 
-        out_vec = subprocess.check_output(['bash index_unit.sh', out_string])
-        fp.write(fname + " : " + inp_vec + " : " + out_vec)
+        out_vec = subprocess.check_output(['./index_unit.sh', out_string, "output"])
+        fp.write(fname + " : " + inp_vec + " : " + out_vec + "\n")
         file_count += 1
+        print "Processed File No ", file_count, " - ", fname
         
     print "Total Files Processed : ", file_count
+    fp.close()

@@ -6,7 +6,8 @@ import math
 if __name__=="__main__": 
     input_vector = sys.argv[1:8]
     output_vector = sys.argv[8:15]
-
+    theta = float(sys.argv[15])
+    similar_services = []
     in_sq = 0
     op_sq = 0
     for i in range(7) :
@@ -50,6 +51,17 @@ if __name__=="__main__":
         if not den_op == 0:
             op_cos = op_sum / den_op
 
-        print in_cos, op_cos
+        avg_cos = (in_cos + op_cos) / 2
+        if avg_cos > theta :
+            temp_list = []
+            temp_list.append(text[0])
+            temp_list.append(avg_cos)
+            temp_list.append(in_cos)
+            temp_list.append(op_cos)
+            similar_services.append(temp_list)
 
     ind_file.close()
+    similar_services.sort(key=lambda x:x[1])
+
+    for item in similar_services :
+        print item[0], " : ", item[1], " : ", item[2], " : ", item[3]
