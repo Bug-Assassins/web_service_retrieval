@@ -19,7 +19,7 @@ if __name__=="__main__":
     in_sq = math.sqrt(in_sq)
     op_sq = math.sqrt(op_sq)
 
-    ind_file = open("indexed_services.txt","r")
+    ind_file = open("indexed_services","r")
 
     for line in ind_file :
         text = line.split(':')
@@ -52,7 +52,7 @@ if __name__=="__main__":
             op_cos = op_sum / den_op
 
         avg_cos = (in_cos + op_cos) / 2
-        if avg_cos > theta :
+        if avg_cos >= theta :
             temp_list = []
             temp_list.append(text[0])
             temp_list.append(avg_cos)
@@ -62,6 +62,7 @@ if __name__=="__main__":
 
     ind_file.close()
     similar_services.sort(key=lambda x:x[1])
+    similar_services.reverse()
 
     for item in similar_services :
         print item[0], " : ", item[1], " : ", item[2], " : ", item[3]
