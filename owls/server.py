@@ -13,12 +13,13 @@ try:
     from bs4 import BeautifulSoup
 except :
     print "Dependencies Unmet !!"
+    sys.exit(1)
 
 #A list of delimiters to be used to split the user's input sting
 delims = "\"", "'", ".", "\\", "/", "?", " ", "\t", "\r", "\n", "(", ")", "{", "}", ";", "&", "@", "~", "^", "*", "-"
 
 #The Synsets of our categories
-categories = [wn.synset('communication.n.01'), wn.synset('economy.n.01'), wn.synset('education.n.01'), wn.synset('food.n.01'), wn.synset('medicine.n.02'), wn.synset('tavel.n.01'), wn.synset('weapon.n.01')]
+categories = [wn.synset('communication.n.01'), wn.synset('economy.n.01'), wn.synset('education.n.01'), wn.synset('food.n.01'), wn.synset('medicine.n.02'), wn.synset('travel.n.01'), wn.synset('weapon.n.01')]
 
 #Loading Information Content
 genesis_ic = wn.ic(genesis, False, 0.0)
@@ -122,6 +123,37 @@ def getsenses(str, pos_flag) :
 
     return query
 
+# This function accepts a list of Lemmas and then returns a vector in 7 dimensional space
+def vectorize_lemmas(lemma_list) :
+
+    #Initializing Sum
+    category_sim_sums = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    no_of_lemmas = len(lemma_list)
+    sq_total = 0
+
+    #Adding sums of all the lemma in each dimension
+    for lemma in lemma_list :
+        for i, category in enumerate(categories) :
+            category_sim_sums[i] += lemma.jcn_similarity(category, genesis_ic)
+
+    #Normalizing sum across all categories
+    for i in range(7) :
+        try :
+            sq_total += (category_sim_sums[i] ** 2)
+        except OverflowError:
+            # Might Occur if similarity is very small
+            sq_total += 0
+
+    sq_root_total = sq_total ** 0.5
+
+    if sq_root_total == 0 :
+        sq_root_total = 1
+
+    for i in range(7) :
+        category_sim_sums[i] = category_sim_sums[i] / sq_root_total
+
+    return category_sim_sums
+
 def index_owls_data():
 
     file_count = 0
@@ -135,7 +167,7 @@ def index_owls_data():
         soup = BeautifulSoup(owl)
 
         #Finding all Text Description of the OWLs file
-        text_descriptions = soup.find_all('profile:textDescription')
+        text_descriptions = soup.find_all('profile:textdescription')
 
         if len(text_descriptions) == 0 :
             print "No Description Found for " + fname
@@ -144,31 +176,15 @@ def index_owls_data():
             print "Multiple Text Description Found For " + fname
             continue
 
-        description = text_descriptions[0]
+        description = text_descriptions[0].text.strip()
 
         #Getting Lemmas of the text description of this file
-        owl_lemmas = getsenses(descriptions, pos_flag = wn.NOUN)
+        owl_lemmas = getsenses(description, pos_flag = wn.NOUN)
 
-        #Initializing Sum
-        category_sim_sums = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        no_of_lemmas = len(owl_lemmas)
-        sq_total = 0
-
-        #Adding sums of all the lemma in the owl description
-        for lemma in owl_lemmas :
-            for i, category in enumerate(categories) :
-                category_sim_sums[i] += lemma.jcn_similarity(category, genesis_ic)
-
-        #Normalizing sum across all categories
-        for i in range(7) :
-            category_sim_sums[i] = category_sim_sums[i] / no_of_lemmas
-            sq_total += (category_sim_sums[i] ** 2)
-
-        sq_root_total = sq_total ** 0.5
+        category_sim_sums = vectorize_lemmas(owl_lemmas)
         st = ""
 
         for i in range(7) :
-            category_sim_sums[i] = category_sim_sums[i] / sq_root_total
             if i > 0 :
                 st += " "
             st += str(category_sim_sums[i])
