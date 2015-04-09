@@ -3,8 +3,10 @@ lemmas using wordnet. The script inputs a string as parameter and returns a
 vector of lemmas'''
 
 try:
+    from operator import itemgetter
     from nltk.corpus import wordnet as wn
     from nltk.corpus import genesis
+    import string
     import sys
     import re
     import os
@@ -19,10 +21,22 @@ except :
 delims = "\"", "'", ".", "\\", "/", "?", " ", "\t", "\r", "\n", "(", ")", "{", "}", ";", "&", "@", "~", "^", "*", "-"
 
 #The Synsets of our categories
-categories = [wn.synset('communication.n.01'), wn.synset('economy.n.01'), wn.synset('education.n.01'), wn.synset('food.n.01'), wn.synset('medicine.n.02'), wn.synset('travel.n.01'), wn.synset('weapon.n.01')]
+categories = [
+            wn.synset('communication.n.01'),
+            wn.synset('economy.n.01'),
+            wn.synset('education.n.01'),
+            wn.synset('food.n.01'),
+            wn.synset('medicine.n.02'),
+            wn.synset('travel.n.01'),
+            wn.synset('weapon.n.01')
+            ]
 
 #Loading Information Content
 genesis_ic = wn.ic(genesis, False, 0.0)
+
+#Path for the owls documents
+owls_path = "docs"
+index_file_path = "indexed_services_semantic"
 
 #Compare function to sort lists according to length
 def compare_len(x, y) :
@@ -154,16 +168,18 @@ def vectorize_lemmas(lemma_list) :
 
     return category_sim_sums
 
+# This function index all the OWLs files in docs folder and indexed data is
+# written in a text file
 def index_owls_data():
 
     file_count = 0
-    fp = open("indexed_services_semantic","w+")
+    fp = open(index_file_path, "w+")
 
-    for fname in os.listdir("docs"):
+    for fname in os.listdir(owls_path):
         try : 
-            owl = open( "docs/" + fname ,'r').read()
+            owl = open(os.path.join(owls_path, fname),'r').read()
         except IOError:
-            print "Error Processing File : docs/" + fname
+            print "Error Processing File : "+ os.path.join(owls_path, fname)
         soup = BeautifulSoup(owl)
 
         #Finding all Text Description of the OWLs file
@@ -192,13 +208,105 @@ def index_owls_data():
         fp.write(fname + " : " + st + "\n")
 
         file_count = file_count + 1
-        print file_count, " " + fname + "\n"
+        # print file_count, " " + fname + "\n"
 
     print "No of Files OWLs Documents Indexed = ", file_count
 
+# This function accepts 2 7-dimensional vector and returns the cosine similarity between them
+def cosine_similarity(u, v) :
+
+    usq = 0
+    vsq = 0
+    num = 0
+
+    for element in u :
+        usq += (element ** 2)
+
+    for element in v :
+        vsq += (element ** 2)
+
+    #Numerator is the dot Product
+    for i in range(len(u)) :
+        num += u[i] * v[i]
+
+    #Denominator is the length of both vecs
+    usq = (usq ** 0.5)
+    vsq = (vsq ** 0.5)
+
+    sim = num / (usq * vsq)
+
+    return sim
+
+# This function process a given user query and returns a list of matching OWLS documents
+def process_query(query) :
+
+    query_vector = vectorize_lemmas(getsenses(query, pos_flag = wn.NOUN))
+
+    query_square = 0
+
+    for ele in query_vector :
+        query_square += ele ** 2
+
+    query_root = query_square ** 0.5
+
+    ind_file = open(index_file_path, "r")
+
+    result = []
+
+    for line in ind_file :
+        text = line.split(':')
+        owl_vector = string.translate(text[1].strip(), None, "\n").split()
+
+        owl_square = 0
+        num = 0
+
+        for i in range(len(owl_vector)) :
+            owl_vector[i] = float(owl_vector[i])
+            try :
+                owl_square += owl_vector[i] ** 2
+            except OverflowError :
+                owl_square += 0
+
+            num += owl_vector[i] * query_vector[i]
+
+        owl_root = owl_square ** 0.5
+
+        if owl_root == 0 or query_root == 0 :
+            print "owl = ", owl_root, " oo = ", owl_vector
+            print "query = ", query_root
+            owl_root = 1
+            query_root = 1
+
+        sim = num / (owl_root * query_square)
+
+        if sim > 1 :
+            print "Greater than 1 sim :"
+            print owl_vector
+            print query_vector
+            print "Num = ", num, " owl_root = ", owl_root, " query_root = ", query_root
+
+        temp = []
+        temp.append(sim)
+        temp.append(text[0].strip())
+
+        result.append(temp)
+
+    result.sort(key = itemgetter(0))
+    result.reverse()
+
+    return result
+
+# Main Function to that keeps listening for input
 if __name__ == '__main__':
 
     index_owls_data()
+
+    query_str = "Hello Education Programming"
+
+    ans = process_query(query_str)
+
+    for result in ans :
+        print result[0], " ", result[1]
 
     #if len(sys.argv) != 2 :
     #    print "Invalid Number of Arguments Passed"
