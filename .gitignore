@@ -1,5 +1,6 @@
 Reports/*
 owls/docs/*
+owls/*.temp
 Web_Services_paper/*
 wsdl_data_set/*
 *~

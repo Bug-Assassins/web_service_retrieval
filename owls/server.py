@@ -150,6 +150,8 @@ def vectorize_lemmas(lemma_list) :
         for i, category in enumerate(categories) :
             category_sim_sums[i] += lemma.jcn_similarity(category, genesis_ic)
 
+    return category_sim_sums
+
     #Normalizing sum across all categories
     for i in range(7) :
         try :
@@ -197,15 +199,21 @@ def index_owls_data():
         #Getting Lemmas of the text description of this file
         owl_lemmas = getsenses(description, pos_flag = wn.NOUN)
 
-        category_sim_sums = vectorize_lemmas(owl_lemmas)
-        st = ""
 
-        for i in range(7) :
-            if i > 0 :
-                st += " "
-            st += str(category_sim_sums[i])
+        #category_sim_sums = vectorize_lemmas(owl_lemmas)
+        #st = ""
 
-        fp.write(fname + " : " + st + "\n")
+        #for i in range(7) :
+        #    if i > 0 :
+        #        st += " "
+        #    st += str(category_sim_sums[i])
+
+        sstr = ""
+        for i in range(len(owl_lemmas) - 1) :
+            sstr += owl_lemmas[i].name() + ","
+        sstr += owl_lemmas[len(owl_lemmas) - 1].name()
+
+        fp.write(fname + " : " + sstr + "\n")
 
         file_count = file_count + 1
         # print file_count, " " + fname + "\n"
@@ -277,7 +285,7 @@ def process_query(query) :
             owl_root = 1
             query_root = 1
 
-        sim = num / (owl_root * query_square)
+        sim = num / (owl_root * query_root)
 
         if sim > 1 :
             print "Greater than 1 sim :"
@@ -296,16 +304,88 @@ def process_query(query) :
 
     return result
 
+def linear_query(query_string) :
+
+    query_lemmas = getsenses(query_string, pos_flag = wn.NOUN)
+
+    ind_file = open(index_file_path, "r")
+    result = []
+
+    for line in ind_file :
+        text = line.split(':')
+        owl_lemmas = string.translate(text[1].strip(), None, "\n").split(',')
+
+        total_sim = 0
+
+        for s in owl_lemmas :
+            ol = wn.synset(s)
+            for ql in query_lemmas :
+                sim = ol.jcn_similarity(ql, genesis_ic)
+                if sim > 1 :
+                    total_sim += 1
+                else :
+                    total_sim += sim
+
+        total_sim = total_sim / (len(owl_lemmas) * len(query_lemmas))
+        if total_sim > 2 :
+            print "owl_lemmas = ", owl_lemmas
+            print "query_lemmas = ", query_lemmas
+
+        temp = [total_sim]
+        temp.append(text[0])
+
+        result.append(temp)
+
+    #Sort according to similarity
+    result.sort(key = itemgetter(0))
+    result.reverse()
+    for i in range(len(result)) :
+        result[i].append(i)
+
+    #Sort by name - 3rd element is rank
+    result.sort(key = itemgetter(1))
+    return result
+
 # Main Function to that keeps listening for input
 if __name__ == '__main__':
 
-    index_owls_data()
+    #index_owls_data()
 
-    query_str = "Hello Education Programming"
+    semantic_res = linear_query(sys.argv[1] + " " + sys.argv[2])
+    subprocess.check_output(["./main.sh", sys.argv[1], sys.argv[1], '0'  ])
 
-    ans = process_query(query_str)
+    #Read Keyword Result
+    res = open('result.temp', 'r')
 
-    for result in ans :
+    keyword_res = []
+
+    ind = int(1)
+    for ser in res :
+        name = ser.split(':')[0]
+        temp = [name]
+        temp.append(ind)
+        keyword_res.append(temp)
+        ind += 1
+
+    keyword_res.sort(key = itemgetter(0))
+
+    if len(keyword_res) != len(semantic_res) :
+        print "Wrong Length of Result - keyword = ", len(keyword_res), " sem = ", len(semantic_res)
+        sys.exit(1)
+
+    for i in range(len(semantic_res)) :
+
+        if semantic_res[i][1].strip() != keyword_res[i][0].strip() :
+            print "Names Unequal = ", semantic_res[i][1], ", ", keyword_res[i][0]
+            sys.exit(1)
+
+        keyword_res[i][1] += semantic_res[i][2]
+        keyword_res[i][1] /= 2
+
+    keyword_res.sort(key = itemgetter(1))
+
+
+    for result in keyword_res :
         print result[0], " ", result[1]
 
     #if len(sys.argv) != 2 :
