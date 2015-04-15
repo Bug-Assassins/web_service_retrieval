@@ -12,6 +12,7 @@ try:
     import os
     import glob
     import subprocess
+    import socket
     from bs4 import BeautifulSoup
 except :
     print "Dependencies Unmet !!"
@@ -37,6 +38,10 @@ genesis_ic = wn.ic(genesis, False, 0.0)
 #Path for the owls documents
 owls_path = "docs"
 index_file_path = "indexed_services_semantic"
+
+#Socket Configuration
+HOST = '' #Empty string = accept connection from any host
+PORT = 12002 #Port Number to be used for listening
 
 #Compare function to sort lists according to length
 def compare_len(x, y) :
@@ -346,13 +351,15 @@ def linear_query(query_string) :
     result.sort(key = itemgetter(1))
     return result
 
-# Main Function to that keeps listening for input
-if __name__ == '__main__':
+#This function takes in directly the user query string and applies both
+#semantic and keyowrd based approach to determine matching owls docs
+def combined_query(query) :
 
-    #index_owls_data()
+    print "QI = ", query[0], " QO = ", query[1]
 
-    semantic_res = linear_query(sys.argv[1] + " " + sys.argv[2])
-    subprocess.check_output(["./main.sh", sys.argv[1], sys.argv[1], '0'  ])
+    #Executing semantic Query
+    semantic_res = linear_query(query[0] + " " + query[1])
+    subprocess.check_output(["./main.sh", query[0], query[1], '0'])
 
     #Read Keyword Result
     res = open('result.temp', 'r')
@@ -366,6 +373,8 @@ if __name__ == '__main__':
         temp.append(ind)
         keyword_res.append(temp)
         ind += 1
+
+    res.close()
 
     keyword_res.sort(key = itemgetter(0))
 
@@ -384,6 +393,44 @@ if __name__ == '__main__':
 
     keyword_res.sort(key = itemgetter(1))
 
+    return keyword_res
+
+#This Function accepts the query via socket and returns result via same socket
+def accept_query(s) :
+
+    #Receiving Data
+    conn, addr = s.accept()
+    data = conn.recv(10000)
+    if not data :
+        print "No data received"
+        conn.close()
+        return
+    #Spliting data into input and output
+    data = str(data).split('#')
+    print "Request by - ", addr, " Query = ", data
+    res = combined_query(data)
+    
+    reply = ''
+    for item in res :
+        reply = reply + item[0] + ','
+
+    conn.sendall(reply)
+    conn.close()
+
+# Main Function to that keeps listening for input
+if __name__ == '__main__':
+
+    #index_owls_data()
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(1)
+    print "Server Up and Running!!"
+    while True :
+        try :
+            accept_query(s)
+        except Exception :
+            print "Problem is Processing Query !!"
 
     for result in keyword_res :
         print result[0], " ", result[1]

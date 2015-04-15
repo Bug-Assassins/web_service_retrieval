@@ -70,6 +70,8 @@
 		}
         if ($theta == "")
         $theta = 0.5;
+
+    	$final_query = $_POST["input"].'#'.$_POST["output"];
         
 	}
 	else
@@ -78,48 +80,75 @@
 		$out = '"'.$_SESSION["out"].'"';
 		$theta = '"'.$_SESSION["theta"].'"';
 	}
-	$shell = "bash main.sh";
-	$cmd = $shell." ".$in." ".$out." ".$theta;
-	$output = shell_exec($cmd);
-	$file = fopen("result.temp","r");
+
+	//Creating Socket
+	if(!($sock = socket_create(AF_INET, SOCK_STREAM, 0)))
+	{
+	    $errorcode = socket_last_error();
+	    $errormsg = socket_strerror($errorcode);
+
+	    die("Couldn't create socket: [$errorcode] $errormsg \n");
+	}
+
+	//echo "Socket created";
+	$address = '127.0.0.1';
+	$port = 12002;
+
+	if(!socket_connect($sock , $address , $port))
+	{
+	    $errorcode = socket_last_error();
+	    $errormsg = socket_strerror($errorcode);
+
+	    die("Could not connect: [$errorcode] $errormsg \n");
+	}
+
+	//Sending Query
+	if( ! socket_send ( $sock , $final_query, strlen($final_query) , 0))
+    {
+        $errorcode = socket_last_error();
+        $errormsg = socket_strerror($errorcode);
+        socket_close($sock);
+        die("Could not send data: [$errorcode] $errormsg \n");
+    }
+
+    $res = null;
+
+    if( ! socket_recv( $sock, $res, 500000, 0) )
+	{
+		$errorcode = socket_last_error();
+        $errormsg = socket_strerror($errorcode);
+        socket_close($sock);
+        die("Could not send data: [$errorcode] $errormsg \n");
+	}
+
+
+	echo strtok($res, ",");
+	//$shell = "bash main.sh";
+	//$cmd = $shell." ".$in." ".$out." ".$theta;
+	//$output = shell_exec($cmd);
+	//$file = fopen("result.temp","r");
 ?>
 	
 	<table id='services'>
 		<tr>
 			<th>Name of Service</th>
-			<th>Input Score</th>
+			<!--<th>Input Score</th>
 			<th>Output Score</th>
-			<th>Average</th>
+			<th>Average</th> -->
 		</tr>
 
 <?php
 	$flag = false;
-	while(!feof($file))
+	$out = strtok($res, ',');
+	while($out !== false)
 	{
-		
-		$line = fgets($file);
-		if($line === false)
-			break;
-		$token = strtok($line, ":");
-		$i = 0;
-		if($flag === false)
-			echo "<tr>";
-		else
-			echo "<tr class='alt'>";
-		while ($token !== false)
-		{
-			$arr[ $i++ ] = $token;
-			$token = strtok(":");
-		}
-
-		echo "<td><a href='docs/$arr[0]'>$arr[0]</a></td>";
-		echo "<td>$arr[2]</td>";
-		echo "<td>$arr[3]</td>";
-		echo "<td>$arr[1]</td></tr>";
+		if($flag === false) echo "<tr>";
+		else echo "<tr class='alt'>";
 		$flag = !($flag);
-	}	
 
-	fclose($file);
+		echo "<td><a href='docs/". $out ."'>".$out."</a></td>";
+		$out = strtok(',');	
+	}
 ?>
 	</table>
 </body>
