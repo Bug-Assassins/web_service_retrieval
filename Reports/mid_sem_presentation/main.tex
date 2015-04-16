@@ -1,0 +1,205 @@
+\documentclass[12pt,xcolor=dvipsnames]{beamer}
+\usetheme{AnnArbor}
+\usecolortheme{crane}
+
+\usepackage{hyperref}   
+\usepackage{url}
+\hypersetup{urlcolor=red}
+
+\renewcommand{\bibname}{References}
+\setbeamertemplate{bibliography item}{[\theenumiv]}
+
+%\usepackage{kbordermatrix}
+\usepackage{multicol}
+\usepackage{verbatim} 
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+
+%Basic Information
+\title{A Vector Space Engine for Web Services  \cite{vector}}
+\author{Adarsh Mohata, Ajith P S, Ashish Kedia}
+\date{\today}
+
+%--------------------------------------------------------------------------------------
+%               TITLE PAGE (Slide 1)
+%--------------------------------------------------------------------------------------
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+%--------------------------------------------------------------------------------------
+
+
+%--------------------------------------------------------------------------------------
+%               Outline
+%--------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Outline}
+\begin{multicols}{2}
+\tableofcontents[hideallsubsections]
+\end{multicols}
+\end{frame}
+
+\section{Vision}
+\begin{frame}
+\frametitle{Vision}
+\begin{itemize}
+ \item Finding already existing web services on the internet easily
+ \item Getting as much semantic information as possible from the files used to describe the services
+\end{itemize}
+\end{frame}
+
+\section{Abstract}
+\begin{frame}
+\frametitle{How to achieve the goal ??}
+\begin{itemize}
+ \item Mining of Meta (WSDL) Files for web services
+ \item Indexing as many WSDL files as possible
+ \item Extracting keywords from the files indexed so that the method of vector space model can be used to represent web services
+ \item Implementing an algorithm which allows us to join detached web service repositories to a single one
+ \item Execute queries in the resultant vector space
+\end{itemize}
+\end{frame}
+
+\section{Vector Space Model}
+
+\subsection{The Term Space}
+\begin{frame}
+\frametitle{The Term Space}
+\begin{itemize}
+ \item Create a vector space of n - dimensions where each dimension is a keyword extracted from the meta-files indexed
+ \item Dimension grows when a previously undiscovered term is encountered
+ \item Each document is represented by a vector :
+\begin{equation}
+d = (d_{1}, d_{2}, d_{3} .... d_{n})
+\end{equation}
+where $d_{i}$ is a real number indicating the degree of importance of term $t_{i}$ in describing the document $d$
+\end{itemize}
+\end{frame}
+
+\subsection{Weighting of Terms}
+\begin{frame}
+ \frametitle{Weighting of Terms}
+ Instead of binary weightage the authors of the paper have used the inverse document frequency of a document to assign weightage to occurence of each term in a given document
+\begin{equation}
+ idf_{k} = ld\left( \frac{N}{n_{k}} + 1\right)
+\end{equation}
+\begin{equation}
+ w_{ik} = tf_{ik} * ld\left( \frac{N}{n_{k}} + 1\right)
+\end{equation}
+where, $T_{k} = $ term $k$ in Document $D_{i}$, \\
+$tf_{ik} = $ frequency of tem $T_{k}$ in Document $D_{i}$, \\
+$idf_{k} = $ inverse document frequency of term $T_{k}$, \\
+$N = $ total number of documents, \\
+$n_{k} = $ the number of documents that contain $T_{k}$ \\
+\end{frame}
+
+
+\subsection{Dynamic Modeling of Documents}
+\begin{frame}
+\frametitle{Dynamic Modeling}
+ \begin{itemize}
+	\item In this system the values of each vector reflect the overall number of documents and the particular weights to each term.
+	\item Only possible in a centralized model where the values for $N$ and $N_{k}$ are already known.
+	\item When two vector spaces are to be combined this knowledge is not available prior
+	\item All necessary data has to be stored individually to enable weighting at runtime
+	\item Additional overhead in query processing but adding new documents is extremely fast
+ \end{itemize}
+\end{frame}
+
+\subsection{Adding New Document}
+\begin{frame}
+ \frametitle{Adding New Document}
+ When a new document is added to the index:
+ \begin{enumerate}
+	\item The raw term frequencies are calculated for the documents. The vector space is expanded if new terms are found
+	\item The raw term frequencies are stored for each term that occurs in the new document
+	\item Values of $N$ and $N_{k}$ are updated
+ \end{enumerate}
+ Data Structure proposed for implementation = Hash Table
+\end{frame}
+
+\subsection{Document Rating Algorithm}
+\begin{frame}
+ \frametitle{Document Rating Algorithm}
+ \begin{itemize}
+  \item Once the term weights for a document or a query has been assigned the similarity to other documents within the same term space can be rated and the method proposed is Cosine Coefficient
+  \item It takes two vectors $p$ and $q$ and generates the cosine of the angle between them
+  \item Documents with no common terms have cosine of 0 and those documents which are very similar have a cosine value near to 1
+ \end{itemize}
+ \begin{equation}
+  cos\left( p, q \right) = \frac{\sum \limits_{i = 1} \limits^{n} p_{i}q_{i} }{\sqrt{\sum \limits_{i = 1} \limits^{n} p_{i}^{2} \sum \limits_{i = 1} \limits^{n} q_{i}^{2}}}
+ \end{equation}
+ where $p_{i}$ and $q_{i}$ are dimensions of 2 given vectors
+\end{frame}
+
+\section{Implementation}
+\begin{frame}
+\frametitle{Implementation}
+ The implementation can be divided into the following sections :
+ \begin{enumerate}
+  \item Indexing of WSDL files
+  \item Keyword extraction
+  \item Query processor and joiner
+  \item Basic User-Friendly Frontend
+ \end{enumerate}
+\end{frame}
+
+\section{Progess}
+\subsection{Challenges Faced}
+\begin{frame}
+ \frametitle{Challenges faced}
+ We faced the following challenges during the immplementation of the concept :
+ \begin{enumerate}
+  \item UDDI repositories are obsolete. Major UDDI registry vendors like Microsoft, IBM, etc. are no longer providing this service
+  \item Multiple langages in repositories that we gathered
+  \item Detecting Bad Meta-Files (Corrupt or unavailable)
+  \item Most of the servers do not allow cross-domain scripting which is essential for automating the process of collecting web service meta-files
+  \item Working with limited resources like slow WiFi in Hostel
+ \end{enumerate}
+\end{frame}
+
+
+\subsection{Our Work till Date}
+\begin{frame}
+\frametitle{Our Work till 21st September, 2014}
+ \begin{enumerate}
+  \item We have been able to find few public repositories but they contain only a few hundred meta-files
+  \item We have written customised scripts for gathering the destination and meta-files of all those web services
+  \item We have also written scripts to parse the various URLs related to meta-files
+  \item We have made a basic frontend for the engine in the form of a web service although currently it offers only a simple unit conversion as the service
+ \end{enumerate}
+\end{frame}
+
+\subsection{Tools Used}
+\begin{frame}
+\frametitle{Tools and Packages Used}
+ \begin{enumerate}
+  \item JavaScript - To parse all links
+  \item Python - To automate downloading of parsed links (Meta-Files) using multiple threads
+  \item Shell Scripts - Useful tools like sed, grep, tr, etc to parse the documents
+  \item Web Browser's Developer Tool - For effective debugging
+  \item \LaTeX
+ \end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{What we have Learned ??}
+\begin{itemize}
+	\item Python, JavaScript, Mechanize, Multi-Threading
+    \item Using tools like Git and Latex
+    \item Documentation is important
+    \item How to conduct research, read and understand paper
+    \item Team Collaboration
+\end{itemize}
+\end{frame}
+
+\section{References}
+\frametitle{References}
+\begin{frame}[allowframebreaks]{References}
+\bibliographystyle{ieeetr}
+\bibliography{biblio}
+\end{frame}
+\end{document}
