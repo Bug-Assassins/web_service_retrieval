@@ -120,9 +120,6 @@
         socket_close($sock);
         die("Could not send data: [$errorcode] $errormsg \n");
 	}
-
-
-	echo strtok($res, ",");
 	//$shell = "bash main.sh";
 	//$cmd = $shell." ".$in." ".$out." ".$theta;
 	//$output = shell_exec($cmd);
