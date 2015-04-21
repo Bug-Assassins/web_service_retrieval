@@ -9,7 +9,8 @@ except ImportError:
     print "BeautifulSoup is missing"
     sys.exit(1)
 
-if __name__=="__main__":
+#This function indexes OWls data using Keyword Approach
+def keyword_indexing():
     file_count = 0
     fp = open("indexed_services","w+")
     for fname in os.listdir("docs"):

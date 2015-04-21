@@ -5,3 +5,4 @@ wsdl_data_set/*
 *~
 *.out
 *.in
+*.pyc

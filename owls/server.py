@@ -14,6 +14,8 @@ try:
     import subprocess
     import socket
     from bs4 import BeautifulSoup
+    from os import listdir
+    from indexing import *
 except :
     print "Dependencies Unmet !!"
     sys.exit(1)
@@ -177,7 +179,7 @@ def vectorize_lemmas(lemma_list) :
 
 # This function index all the OWLs files in docs folder and indexed data is
 # written in a text file
-def index_owls_data():
+def semantic_indexing():
 
     file_count = 0
     fp = open(index_file_path, "w+")
@@ -420,20 +422,30 @@ def accept_query(s) :
 # Main Function to that keeps listening for input
 if __name__ == '__main__':
 
-    #index_owls_data()
+    if len(sys.argv) == 2 :
+        if sys.argv[1] == "semanticindex" :
+            print "Indexing Services Semantically !!"
+            semantic_indexing()
+            print "Semantic Indexing of Services Done !!"
+        elif sys.argv[1] == "vectorindex" :
+            print "Indexing Services using Keywords !!"
+            keyword_indexing()
+            print "Keyword Indexing of Sevices Done !!"
+        elif sys.argv[1] == "runserver" :
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind((HOST, PORT))
+            s.listen(1)
+            print "Server Up and Running!!"
+            while True :
+                try :
+                    accept_query(s)
+                except Exception :
+                    print "Problem is Processing Query !!"
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))
-    s.listen(1)
-    print "Server Up and Running!!"
-    while True :
-        try :
-            accept_query(s)
-        except Exception :
-            print "Problem is Processing Query !!"
-
-    for result in keyword_res :
-        print result[0], " ", result[1]
+            for result in keyword_res :
+                print result[0], " ", result[1]
+    else :
+        print "Invalid Arguments Passed"
 
     #if len(sys.argv) != 2 :
     #    print "Invalid Number of Arguments Passed"
