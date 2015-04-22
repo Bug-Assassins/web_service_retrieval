@@ -3,7 +3,7 @@ import sys
 import string
 import math
 
-if __name__=="__main__": 
+def cosine_search(sys) :
     input_vector = sys.argv[1:8]
     output_vector = sys.argv[8:15]
     theta = float(sys.argv[15])
@@ -63,6 +63,12 @@ if __name__=="__main__":
     ind_file.close()
     similar_services.sort(key=lambda x:x[1])
     similar_services.reverse()
+
+    return similar_services
+
+if __name__=="__main__": 
+
+    similar_services = cosine_search(sys)
 
     for item in similar_services :
         print item[0], " : ", item[1], " : ", item[2], " : ", item[3]

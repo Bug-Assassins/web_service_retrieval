@@ -44,6 +44,11 @@ index_file_path = "indexed_services_semantic"
 #Socket Configuration
 HOST = '' #Empty string = accept connection from any host
 PORT = 12002 #Port Number to be used for listening
+COMPOSITE_PORT = 12010
+
+# Composite Query variables
+COMPOSITE_SIMILARITY_CUTOFF = 0.8
+graph = None
 
 #Compare function to sort lists according to length
 def compare_len(x, y) :
@@ -144,39 +149,6 @@ def getsenses(str, pos_flag) :
 
     return query
 
-# This function accepts a list of Lemmas and then returns a vector in 7 dimensional space
-def vectorize_lemmas(lemma_list) :
-
-    #Initializing Sum
-    category_sim_sums = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    no_of_lemmas = len(lemma_list)
-    sq_total = 0
-
-    #Adding sums of all the lemma in each dimension
-    for lemma in lemma_list :
-        for i, category in enumerate(categories) :
-            category_sim_sums[i] += lemma.jcn_similarity(category, genesis_ic)
-
-    return category_sim_sums
-
-    #Normalizing sum across all categories
-    for i in range(7) :
-        try :
-            sq_total += (category_sim_sums[i] ** 2)
-        except OverflowError:
-            # Might Occur if similarity is very small
-            sq_total += 0
-
-    sq_root_total = sq_total ** 0.5
-
-    if sq_root_total == 0 :
-        sq_root_total = 1
-
-    for i in range(7) :
-        category_sim_sums[i] = category_sim_sums[i] / sq_root_total
-
-    return category_sim_sums
-
 # This function index all the OWLs files in docs folder and indexed data is
 # written in a text file
 def semantic_indexing():
@@ -206,15 +178,6 @@ def semantic_indexing():
         #Getting Lemmas of the text description of this file
         owl_lemmas = getsenses(description, pos_flag = wn.NOUN)
 
-
-        #category_sim_sums = vectorize_lemmas(owl_lemmas)
-        #st = ""
-
-        #for i in range(7) :
-        #    if i > 0 :
-        #        st += " "
-        #    st += str(category_sim_sums[i])
-
         sstr = ""
         for i in range(len(owl_lemmas) - 1) :
             sstr += owl_lemmas[i].name() + ","
@@ -227,90 +190,7 @@ def semantic_indexing():
 
     print "No of Files OWLs Documents Indexed = ", file_count
 
-# This function accepts 2 7-dimensional vector and returns the cosine similarity between them
-def cosine_similarity(u, v) :
-
-    usq = 0
-    vsq = 0
-    num = 0
-
-    for element in u :
-        usq += (element ** 2)
-
-    for element in v :
-        vsq += (element ** 2)
-
-    #Numerator is the dot Product
-    for i in range(len(u)) :
-        num += u[i] * v[i]
-
-    #Denominator is the length of both vecs
-    usq = (usq ** 0.5)
-    vsq = (vsq ** 0.5)
-
-    sim = num / (usq * vsq)
-
-    return sim
-
-# This function process a given user query and returns a list of matching OWLS documents
-def process_query(query) :
-
-    query_vector = vectorize_lemmas(getsenses(query, pos_flag = wn.NOUN))
-
-    query_square = 0
-
-    for ele in query_vector :
-        query_square += ele ** 2
-
-    query_root = query_square ** 0.5
-
-    ind_file = open(index_file_path, "r")
-
-    result = []
-
-    for line in ind_file :
-        text = line.split(':')
-        owl_vector = string.translate(text[1].strip(), None, "\n").split()
-
-        owl_square = 0
-        num = 0
-
-        for i in range(len(owl_vector)) :
-            owl_vector[i] = float(owl_vector[i])
-            try :
-                owl_square += owl_vector[i] ** 2
-            except OverflowError :
-                owl_square += 0
-
-            num += owl_vector[i] * query_vector[i]
-
-        owl_root = owl_square ** 0.5
-
-        if owl_root == 0 or query_root == 0 :
-            print "owl = ", owl_root, " oo = ", owl_vector
-            print "query = ", query_root
-            owl_root = 1
-            query_root = 1
-
-        sim = num / (owl_root * query_root)
-
-        if sim > 1 :
-            print "Greater than 1 sim :"
-            print owl_vector
-            print query_vector
-            print "Num = ", num, " owl_root = ", owl_root, " query_root = ", query_root
-
-        temp = []
-        temp.append(sim)
-        temp.append(text[0].strip())
-
-        result.append(temp)
-
-    result.sort(key = itemgetter(0))
-    result.reverse()
-
-    return result
-
+# This function searches the semantically index web services linearly to find a match
 def linear_query(query_string) :
 
     query_lemmas = getsenses(query_string, pos_flag = wn.NOUN)
@@ -353,15 +233,10 @@ def linear_query(query_string) :
     result.sort(key = itemgetter(1))
     return result
 
-#This function takes in directly the user query string and applies both
-#semantic and keyowrd based approach to determine matching owls docs
-def combined_query(query) :
+def keyword_query(service_input, service_output) :
 
-    print "QI = ", query[0], " QO = ", query[1]
-
-    #Executing semantic Query
-    semantic_res = linear_query(query[0] + " " + query[1])
-    subprocess.check_output(["./main.sh", query[0], query[1], '0'])
+    #Executing Script
+    subprocess.check_output(["./main.sh", service_input, service_output, '0'])
 
     #Read Keyword Result
     res = open('result.temp', 'r')
@@ -370,13 +245,25 @@ def combined_query(query) :
 
     ind = int(1)
     for ser in res :
-        name = ser.split(':')[0]
-        temp = [name]
+        text = ser.split(':')
+        temp = [text[0].strip()]
         temp.append(ind)
+        temp.append(float(text[2].strip())) # Input Score
+        temp.append(float(text[3].strip())) # Output Score
         keyword_res.append(temp)
         ind += 1
 
     res.close()
+
+    return keyword_res
+
+#This function takes in directly the user query string and applies both
+#semantic and keyowrd based approach to determine matching owls docs
+def combined_query(query) :
+
+    #Executing semantic Query and Keyword Query
+    semantic_res = linear_query(query[0] + " " + query[1])
+    keyword_res = keyword_query(query[0], query[1])
 
     keyword_res.sort(key = itemgetter(0))
 
@@ -397,53 +284,81 @@ def combined_query(query) :
 
     return keyword_res
 
-#This Function accepts the query via socket and returns result via same socket
-def accept_query(s) :
+# This function tries to find a composite service
+def composite_query(query) :
 
-    #Receiving Data
-    conn, addr = s.accept()
-    data = conn.recv(10000)
-    if not data :
-        print "No data received"
-        conn.close()
-        return
-    #Spliting data into input and output
-    data = str(data).split('#')
-    print "Request by - ", addr, " Query = ", data
-    res = combined_query(data)
-    
-    reply = ''
-    for item in res :
-        reply = reply + item[0] + ','
+    keyword_res = keyword_query(query[0], query[1]).sort(key = itemgetter(2))
 
-    conn.sendall(reply)
-    conn.close()
+    # Filtering Results
+    filtered_res = None
+    if len(keyword_res) < 10 :
+        filtered_res = keyword_res
+    else :
+        filtered_res = keyword_res[0:10]
+
+    visited = []
+    for i in range(10) :
+        visited.append(False)
+
+
 
 # Main Function to that keeps listening for input
 if __name__ == '__main__':
 
-    if len(sys.argv) == 2 :
+    if len(sys.argv) > 1 :
         if sys.argv[1] == "semanticindex" :
             print "Indexing Services Semantically !!"
             semantic_indexing()
             print "Semantic Indexing of Services Done !!"
+
         elif sys.argv[1] == "vectorindex" :
             print "Indexing Services using Keywords !!"
             keyword_indexing()
             print "Keyword Indexing of Sevices Done !!"
+
         elif sys.argv[1] == "runserver" :
+
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.bind((HOST, PORT))
+
+            # Constructing Graph if composite services has to be discovered
+            if len(sys.argv) > 2 and sys.argv[2] == "composite" :
+                print "Constructing Composite Graph"
+                graph = construct_service_graph()
+                s.bind((HOST, COMPOSITE_PORT))
+                print "Composite Graph Constructed"
+            else :
+                s.bind((HOST, PORT))
+
             s.listen(1)
             print "Server Up and Running!!"
             while True :
                 try :
-                    accept_query(s)
+                    # Receiving Data
+                    conn, addr = s.accept()
+                    data = conn.recv(10000)
+                    if not data :
+                        print "No data received"
+                        conn.close()
+                        return
+
+                    #Spliting data into input and output
+                    data = str(data).split('#')
+                    print "Request by - ", addr, " Query = ", data
+                    res = combined_query(data)
+                    
+                    reply = ''
+                    for item in res :
+                        reply = reply + item[0] + ','
+
+                    conn.sendall(reply)
+                    conn.close()
+
                 except Exception :
                     print "Problem is Processing Query !!"
 
             for result in keyword_res :
                 print result[0], " ", result[1]
+
     else :
         print "Invalid Arguments Passed"
 
