@@ -3,10 +3,8 @@ import sys
 import string
 import math
 
-def cosine_search(sys) :
-    input_vector = sys.argv[1:8]
-    output_vector = sys.argv[8:15]
-    theta = float(sys.argv[15])
+def cosine_search(input_vector, output_vector, theta) :
+
     similar_services = []
     in_sq = 0
     op_sq = 0
@@ -68,7 +66,7 @@ def cosine_search(sys) :
 
 if __name__=="__main__": 
 
-    similar_services = cosine_search(sys)
+    similar_services = cosine_search(sys.argv[1:8], sys.argv[8:15], float(sys.argv[15]))
 
     for item in similar_services :
         print item[0], " : ", item[1], " : ", item[2], " : ", item[3]

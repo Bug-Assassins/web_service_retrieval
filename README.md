@@ -14,6 +14,8 @@ We have chosen 7 categories for web services which are : Communication, Economy,
 
 We indexed all the services in our dataset using the same technique. After indexing we process the user's request by contructing an equivalent vector representation of the query and then using co-sine similarity to find out similar web services.
 
+The phase two of the project incorporates semantic search based on wordnet.
+
 More details about the implementation techniques can be found in our project report.
 
 Installation

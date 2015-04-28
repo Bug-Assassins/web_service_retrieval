@@ -16,6 +16,7 @@ try:
     from bs4 import BeautifulSoup
     from os import listdir
     from indexing import *
+    from cosine import cosine_search
 except :
     print "Dependencies Unmet !!"
     sys.exit(1)
@@ -236,24 +237,12 @@ def linear_query(query_string) :
 def keyword_query(service_input, service_output) :
 
     #Executing Script
-    subprocess.check_output(["./main.sh", service_input, service_output, '0'])
+    input_vector = subprocess.check_output(['./index_unit.sh', service_input, 'input'])
+    output_vector = subprocess.check_output(['./index_unit.sh', service_output, 'output'])
+    keyword_res = cosine_search(input_vector, output_vector, 0.0)
 
-    #Read Keyword Result
-    res = open('result.temp', 'r')
-
-    keyword_res = []
-
-    ind = int(1)
-    for ser in res :
-        text = ser.split(':')
-        temp = [text[0].strip()]
-        temp.append(ind)
-        temp.append(float(text[2].strip())) # Input Score
-        temp.append(float(text[3].strip())) # Output Score
-        keyword_res.append(temp)
-        ind += 1
-
-    res.close()
+    for i in range(len(keyword_res)) :
+        keyword_res[i].append(i)
 
     return keyword_res
 
@@ -277,10 +266,10 @@ def combined_query(query) :
             print "Names Unequal = ", semantic_res[i][1], ", ", keyword_res[i][0]
             sys.exit(1)
 
-        keyword_res[i][1] += semantic_res[i][2]
-        keyword_res[i][1] /= 2
+        keyword_res[i][4] += semantic_res[i][2]
+        keyword_res[i][4] /= 2
 
-    keyword_res.sort(key = itemgetter(1))
+    keyword_res.sort(key = itemgetter(4))
 
     return keyword_res
 
@@ -297,9 +286,46 @@ def composite_query(query) :
         filtered_res = keyword_res[0:10]
 
     visited = []
+    start_list = []
+
     for i in range(10) :
         visited.append(False)
+        start_list.append(-1)
 
+    start_found_count = 0
+
+    for i, ser in enumerate(graph) :
+        for j, fil in enumerate(filtered_res) :
+            if ser[0] == fil[0] :
+                start_list[j] = i
+                start_found_count += 1
+                break
+        if start_found_count == 10 :
+            break
+
+    for i in range(len(start_list)) :
+
+        if start_list[i] < 0 :
+            print "Service Matching Error - Service Index Not Found!!"
+            return
+
+        input_score = filtered_res[i][2]
+        best_output_score = filtered_res[i][3]
+        current_output_score = best_output_score
+        best_stack = [start_list[i]]
+        visited = [False] * len(graph)
+        rec_stack = [False] * len(graph)
+        dfs_stack = [start_list[i]]
+
+        while len(dfs_stack) > 0 :
+            v = dfs_stack.pop()
+            if visited[v] == False :
+                visited[v] = True
+                rec_stack[v] = True
+                for node in graph[v][3] :
+                    dfs_stack.append(node)
+                if keyword_res[0] != graph[v][0] :
+                    "Critical Error - Service Order Mismatch !!"
 
 
 # Main Function to that keeps listening for input
@@ -339,7 +365,7 @@ if __name__ == '__main__':
                     if not data :
                         print "No data received"
                         conn.close()
-                        return
+                        continue
 
                     #Spliting data into input and output
                     data = str(data).split('#')

@@ -45,7 +45,9 @@ def cosine_similarity(u, v) :
 def keyword_indexing():
     file_count = 0
     fp = open("indexed_services","w+")
-    for fname in os.listdir("docs"):
+    file_list = os.listdir("docs")
+    file_list.sort()
+    for fname in file_list:
         try : 
             owl = open( "docs/" + fname ,'r').read()
         except IOError:
@@ -106,6 +108,25 @@ def keyword_indexing():
     print "Total Files Processed : ", file_count
     fp.close()
 
+
+# A utility Function to check if there is a path from a given node to another given node
+def check_cycle(graph, start, end) :
+
+    visted = [False] * len(graph)
+    dfs_stack = [start]
+
+    while len(dfs_stack) > 0 :
+        v = dfs_stack.pop()
+        if visted[v] == False :
+            visited[v] = True
+            for node in graph[v][3] : 
+                dfs_stack.append(node)
+        if v == end :
+            return True
+
+    return False
+
+
 # This function constructs an in-memory Directed Graph (may be cyclic) of all services
 # Such that input matches output of another services
 def construct_service_graph() :
@@ -119,6 +140,7 @@ def construct_service_graph() :
     # Fourth Element contains a list of indexes to which the node has outgoing edges
 
     graph = []
+    no_of_edges = 0
 
     for line in ind_file :
 
@@ -136,13 +158,12 @@ def construct_service_graph() :
         node.append(text[0])
         node.append(inp_vec_text)
         node.append(op_vec_text)
+        node.append([])
 
         graph.append(node)
 
     # Finding Destination and Appending
     for i in range(len(graph)) :
-
-        destination_nodes = []
 
         for j in range(len(graph)) :
 
@@ -150,9 +171,10 @@ def construct_service_graph() :
                 continue
 
             sim = cosine_similarity(graph[i][2], graph[j][1])
-            if sim > GRAPH_EDGE_CUTOFF :
-                destination_nodes.append(j)
+            if sim > GRAPH_EDGE_CUTOFF and check_cycle(graph, i, j) == False:
+                graph[i][3].append(j)
+                no_of_edges += 1
 
-        graph[i].append(destination_nodes)
+    print no_of_edges + " Edges added to the Graph !!"
 
     return graph
