@@ -285,11 +285,10 @@ def composite_query(query) :
     else :
         filtered_res = keyword_res[0:10]
 
-    visited = []
+    result = []
     start_list = []
 
     for i in range(10) :
-        visited.append(False)
         start_list.append(-1)
 
     start_found_count = 0
@@ -303,6 +302,8 @@ def composite_query(query) :
         if start_found_count == 10 :
             break
 
+    reply = ''
+
     for i in range(len(start_list)) :
 
         if start_list[i] < 0 :
@@ -311,22 +312,37 @@ def composite_query(query) :
 
         input_score = filtered_res[i][2]
         best_output_score = filtered_res[i][3]
-        current_output_score = best_output_score
         best_stack = [start_list[i]]
         visited = [False] * len(graph)
-        rec_stack = [False] * len(graph)
+        rec_stack = []
         dfs_stack = [start_list[i]]
 
         while len(dfs_stack) > 0 :
             v = dfs_stack.pop()
+            rec_stack.append(v)
             if visited[v] == False :
                 visited[v] = True
                 rec_stack[v] = True
                 for node in graph[v][3] :
                     dfs_stack.append(node)
-                if keyword_res[0] != graph[v][0] :
+                if keyword_res[v][0] != graph[v][0] :
                     "Critical Error - Service Order Mismatch !!"
+                    break
+                if keyword_res[v][3] > best_output_score :
+                    best_output_score = keyword_res[v][3]
+                    best_stack = list(rec_stack)
+            rec_stack.pop()
 
+        if i != 0 :
+            reply += '|'
+
+        reply += input_score + ',' + best_output_score
+
+        for service in best_stack :
+            reply += ',' + graph[service][0]
+
+    print reply
+    return reply
 
 # Main Function to that keeps listening for input
 if __name__ == '__main__':
@@ -367,17 +383,23 @@ if __name__ == '__main__':
                         conn.close()
                         continue
 
-                    #Spliting data into input and output
-                    data = str(data).split('#')
-                    print "Request by - ", addr, " Query = ", data
-                    res = combined_query(data)
-                    
-                    reply = ''
-                    for item in res :
-                        reply = reply + item[0] + ','
+                    if sys.argv[2] == "composite" : 
+                        conn.sendall(composite_query(str(data)))
+                        conn.close()
+                    else :
 
-                    conn.sendall(reply)
-                    conn.close()
+                        #Spliting data into input and output
+                        data = str(data).split('#')
+                        print "Request by - ", addr, " Query = ", data
+
+                        res = combined_query(data)
+                        
+                        reply = ''
+                        for item in res :
+                            reply = reply + item[0] + ','
+
+                        conn.sendall(reply)
+                        conn.close()
 
                 except Exception :
                     print "Problem is Processing Query !!"

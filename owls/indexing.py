@@ -2,6 +2,7 @@ import os
 import sys
 import glob
 import subprocess
+import string
 from os import listdir
 try:
     from bs4 import BeautifulSoup
@@ -112,12 +113,12 @@ def keyword_indexing():
 # A utility Function to check if there is a path from a given node to another given node
 def check_cycle(graph, start, end) :
 
-    visted = [False] * len(graph)
+    visited = [False] * len(graph)
     dfs_stack = [start]
 
     while len(dfs_stack) > 0 :
         v = dfs_stack.pop()
-        if visted[v] == False :
+        if visited[v] == False :
             visited[v] = True
             for node in graph[v][3] : 
                 dfs_stack.append(node)
@@ -162,6 +163,8 @@ def construct_service_graph() :
 
         graph.append(node)
 
+    print len(graph) , " Nodes Added to Graph !!"
+
     # Finding Destination and Appending
     for i in range(len(graph)) :
 
@@ -175,6 +178,6 @@ def construct_service_graph() :
                 graph[i][3].append(j)
                 no_of_edges += 1
 
-    print no_of_edges + " Edges added to the Graph !!"
+    print no_of_edges , " Edges added to the Graph !!"
 
     return graph
