@@ -237,9 +237,11 @@ def linear_query(query_string) :
 def keyword_query(service_input, service_output) :
 
     #Executing Script
+
     input_vector = subprocess.check_output(['./index_unit.sh', service_input, 'input'])
     output_vector = subprocess.check_output(['./index_unit.sh', service_output, 'output'])
-    keyword_res = cosine_search(input_vector, output_vector, 0.0)
+
+    keyword_res = cosine_search(input_vector.split(), output_vector.split(), 0.0)
 
     for i in range(len(keyword_res)) :
         keyword_res[i].append(i)
@@ -273,10 +275,30 @@ def combined_query(query) :
 
     return keyword_res
 
+#This function finds and prints long paths in graphs
+def debug_graph() :
+
+    leaf_nodes = 0
+    height = [0] * len(graph)
+    leaf = [None] * len(graph)
+
+    for i in range(len(graph)) :
+        if len(graph[i][3]) == 0 :
+            leaf_nodes += 1
+            height[i] = 1
+
+    print "Number of Nodes"
+
+
 # This function tries to find a composite service
 def composite_query(query) :
 
-    keyword_res = keyword_query(query[0], query[1]).sort(key = itemgetter(2))
+    keyword_res = keyword_query(query[0], query[1])
+    keyword_res.sort(key = lambda x:x[2])
+    keyword_res.reverse()
+
+    for i in range(10) :
+        print "Keword in cos  = ", keyword_res[i][2], "Name = ", keyword_res[i][0]
 
     # Filtering Results
     filtered_res = None
@@ -284,6 +306,10 @@ def composite_query(query) :
         filtered_res = keyword_res
     else :
         filtered_res = keyword_res[0:10]
+
+    print "Filtered Res = "
+    for x in filtered_res :
+        print "input Score = ", x[2], " name = ", x[0]
 
     result = []
     start_list = []
@@ -322,7 +348,6 @@ def composite_query(query) :
             rec_stack.append(v)
             if visited[v] == False :
                 visited[v] = True
-                rec_stack[v] = True
                 for node in graph[v][3] :
                     dfs_stack.append(node)
                 if keyword_res[v][0] != graph[v][0] :
@@ -336,7 +361,7 @@ def composite_query(query) :
         if i != 0 :
             reply += '|'
 
-        reply += input_score + ',' + best_output_score
+        reply += str(input_score) + ',' + str(best_output_score)
 
         for service in best_stack :
             reply += ',' + graph[service][0]
@@ -374,7 +399,7 @@ if __name__ == '__main__':
             s.listen(1)
             print "Server Up and Running!!"
             while True :
-                try :
+                #try :
                     # Receiving Data
                     conn, addr = s.accept()
                     data = conn.recv(10000)
@@ -383,15 +408,15 @@ if __name__ == '__main__':
                         conn.close()
                         continue
 
+                    #Spliting data into input and output
+                    data = str(data).split('#')
+                    print "Request by - ", addr, " Query = ", data
+
                     if sys.argv[2] == "composite" : 
-                        conn.sendall(composite_query(str(data)))
+                        composite_result = composite_query(data)
+                        conn.sendall(composite_result)
                         conn.close()
                     else :
-
-                        #Spliting data into input and output
-                        data = str(data).split('#')
-                        print "Request by - ", addr, " Query = ", data
-
                         res = combined_query(data)
                         
                         reply = ''
@@ -401,8 +426,9 @@ if __name__ == '__main__':
                         conn.sendall(reply)
                         conn.close()
 
-                except Exception :
-                    print "Problem is Processing Query !!"
+                #except Exception, e :
+                #    print "Problem in Processing Query !!"
+                #    print e
 
             for result in keyword_res :
                 print result[0], " ", result[1]

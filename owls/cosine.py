@@ -3,16 +3,23 @@ import sys
 import string
 import math
 
-def cosine_search(input_vector, output_vector, theta) :
+def cosine_search(input_vec, output_vec, theta) :
 
     similar_services = []
     in_sq = 0
     op_sq = 0
+
+    input_vector = [0] * 7
+    output_vector = [0] * 7 
+    
     for i in range(7) :
-        input_vector[i] = int(input_vector[i])
-        output_vector[i] = int(output_vector[i])
+        input_vector[i] = int(input_vec[i])
+        output_vector[i] = int(output_vec[i])
         in_sq += input_vector[i] * input_vector[i]
         op_sq += output_vector[i] * output_vector[i]
+
+    #print "Input Vec = ", input_vector
+    #print "Output Vec = ", output_vector
 
     in_sq = math.sqrt(in_sq)
     op_sq = math.sqrt(op_sq)
@@ -57,6 +64,7 @@ def cosine_search(input_vector, output_vector, theta) :
             temp_list.append(in_cos)
             temp_list.append(op_cos)
             similar_services.append(temp_list)
+            #print "Incos  = ", in_cos, "name = ", text[0]
 
     ind_file.close()
     similar_services.sort(key=lambda x:x[1])
