@@ -64,7 +64,6 @@ def cosine_search(input_vec, output_vec, theta) :
             temp_list.append(in_cos)
             temp_list.append(op_cos)
             similar_services.append(temp_list)
-            #print "Incos  = ", in_cos, "name = ", text[0]
 
     ind_file.close()
     similar_services.sort(key=lambda x:x[1])

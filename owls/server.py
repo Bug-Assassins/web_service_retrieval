@@ -279,15 +279,33 @@ def combined_query(query) :
 def debug_graph() :
 
     leaf_nodes = 0
-    height = [0] * len(graph)
-    leaf = [None] * len(graph)
+    height = [-1] * len(graph)
+    leaf = [-1] * len(graph)
+    max_height = -1
 
     for i in range(len(graph)) :
         if len(graph[i][3]) == 0 :
+            print "Node ", i, " is leaf. Name = ", graph[i][0]
             leaf_nodes += 1
             height[i] = 1
+            leaf[i] = i
 
-    print "Number of Nodes"
+    for i in range(len(graph)) :
+        print "Edges from ", i, " = ", len(graph[i][3])
+        for dest in graph[i][3] :
+            if leaf[dest] == dest : 
+                print i, " is connected to leaf ", dest
+            if height[dest] + 1 > height[i] :
+                height[i] = height[dest] + 1
+                leaf[i] = leaf[dest]
+        if max_height == -1 or  height[i] > height[max_height]:
+            max_height = i
+
+    print "Number of Leaf Nodes = ", leaf_nodes
+    print "Max Heighted Root = ", graph[max_height][0]
+    print "Leaf of Max height = ", leaf[max_height]
+    print "Name of Leaf = ", graph[leaf[max_height]][0]
+    print "Max Height = ", height[max_height], " Index = ", max_height
 
 
 # This function tries to find a composite service
@@ -297,19 +315,17 @@ def composite_query(query) :
     keyword_res.sort(key = lambda x:x[2])
     keyword_res.reverse()
 
-    for i in range(10) :
-        print "Keword in cos  = ", keyword_res[i][2], "Name = ", keyword_res[i][0]
+    #for i in range(10) :
+    #    print "Keword in cos  = ", keyword_res[i][2], "Name = ", keyword_res[i][0]
 
     # Filtering Results
     filtered_res = None
     if len(keyword_res) < 10 :
         filtered_res = keyword_res
     else :
-        filtered_res = keyword_res[0:10]
+        filtered_res = list(keyword_res[0:10])
 
-    print "Filtered Res = "
-    for x in filtered_res :
-        print "input Score = ", x[2], " name = ", x[0]
+    keyword_res.sort(key = lambda x:x[0])
 
     result = []
     start_list = []
@@ -337,34 +353,46 @@ def composite_query(query) :
             return
 
         input_score = filtered_res[i][2]
-        best_output_score = filtered_res[i][3]
-        best_stack = [start_list[i]]
+        best_output = i
         visited = [False] * len(graph)
-        rec_stack = []
+        parent = [-1] * len(graph)
         dfs_stack = [start_list[i]]
+        parent[start_list[i]] = start_list[i]
+
+        #print "Starting inp = ", input_score, " Output = ", filtered_res[i][3]
 
         while len(dfs_stack) > 0 :
             v = dfs_stack.pop()
-            rec_stack.append(v)
+
             if visited[v] == False :
                 visited[v] = True
+
                 for node in graph[v][3] :
-                    dfs_stack.append(node)
+                    if visited[node] == False :
+                        dfs_stack.append(node)
+                        if parent[node] == -1 :
+                            parent[node] = v
+
                 if keyword_res[v][0] != graph[v][0] :
-                    "Critical Error - Service Order Mismatch !!"
-                    break
-                if keyword_res[v][3] > best_output_score :
-                    best_output_score = keyword_res[v][3]
-                    best_stack = list(rec_stack)
-            rec_stack.pop()
+                    print "Critical Error - Service Order Mismatch !!"
+                    raise Exception('Critical Error - Service Order Mismatch !!')
 
-        if i != 0 :
-            reply += '|'
+                #print "v = ", v, " out = ", keyword_res[v][3]
 
-        reply += str(input_score) + ',' + str(best_output_score)
+                if keyword_res[v][3] > keyword_res[best_output][3] :
+                    best_output = v
 
-        for service in best_stack :
-            reply += ',' + graph[service][0]
+        if keyword_res[best_output][3] != 0 :
+            if len(res) != 0 :
+                reply += '|'
+
+            reply += str(input_score) + ',' + str(keyword_res[best_output][3])
+
+            while parent[best_output] != best_output:
+                reply += ',' + str(graph[best_output][0]).strip()
+                best_output = parent[best_output]
+
+            reply += ',' + str(graph[best_output][0]).strip()
 
     print reply
     return reply
@@ -391,6 +419,7 @@ if __name__ == '__main__':
             if len(sys.argv) > 2 and sys.argv[2] == "composite" :
                 print "Constructing Composite Graph"
                 graph = construct_service_graph()
+                #debug_graph()
                 s.bind((HOST, COMPOSITE_PORT))
                 print "Composite Graph Constructed"
             else :

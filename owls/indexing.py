@@ -12,7 +12,7 @@ except ImportError:
 
 # This Cut off is used to determine the similarity above which an edge is added between two
 # service and below this no edge is added i.e., No path and no composition possible
-GRAPH_EDGE_CUTOFF = 0.8
+GRAPH_EDGE_CUTOFF = 0.9
 
 # This function accepts 2 7-dimensional vector and returns the cosine similarity between them
 def cosine_similarity(u, v) :
