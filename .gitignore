@@ -6,3 +6,11 @@ wsdl_data_set/*
 *.out
 *.in
 *.pyc
+*.aux
+*.bbl
+*.blg
+*.lof
+*lot
+*.backup
+*.toc
+*.log

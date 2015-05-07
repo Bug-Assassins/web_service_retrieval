@@ -16,6 +16,7 @@ try:
     from bs4 import BeautifulSoup
     from os import listdir
     from indexing import *
+    from cosine import cosine_search
 except :
     print "Dependencies Unmet !!"
     sys.exit(1)
@@ -236,24 +237,14 @@ def linear_query(query_string) :
 def keyword_query(service_input, service_output) :
 
     #Executing Script
-    subprocess.check_output(["./main.sh", service_input, service_output, '0'])
 
-    #Read Keyword Result
-    res = open('result.temp', 'r')
+    input_vector = subprocess.check_output(['./index_unit.sh', service_input, 'input'])
+    output_vector = subprocess.check_output(['./index_unit.sh', service_output, 'output'])
 
-    keyword_res = []
+    keyword_res = cosine_search(input_vector.split(), output_vector.split(), 0.0)
 
-    ind = int(1)
-    for ser in res :
-        text = ser.split(':')
-        temp = [text[0].strip()]
-        temp.append(ind)
-        temp.append(float(text[2].strip())) # Input Score
-        temp.append(float(text[3].strip())) # Output Score
-        keyword_res.append(temp)
-        ind += 1
-
-    res.close()
+    for i in range(len(keyword_res)) :
+        keyword_res[i].append(i)
 
     return keyword_res
 
@@ -277,30 +268,134 @@ def combined_query(query) :
             print "Names Unequal = ", semantic_res[i][1], ", ", keyword_res[i][0]
             sys.exit(1)
 
-        keyword_res[i][1] += semantic_res[i][2]
-        keyword_res[i][1] /= 2
+        keyword_res[i][4] += semantic_res[i][2]
+        keyword_res[i][4] /= 2
 
-    keyword_res.sort(key = itemgetter(1))
+    keyword_res.sort(key = itemgetter(4))
 
     return keyword_res
+
+#This function finds and prints long paths in graphs
+def debug_graph() :
+
+    leaf_nodes = 0
+    height = [-1] * len(graph)
+    leaf = [-1] * len(graph)
+    max_height = -1
+
+    for i in range(len(graph)) :
+        if len(graph[i][3]) == 0 :
+            print "Node ", i, " is leaf. Name = ", graph[i][0]
+            leaf_nodes += 1
+            height[i] = 1
+            leaf[i] = i
+
+    for i in range(len(graph)) :
+        print "Edges from ", i, " = ", len(graph[i][3])
+        for dest in graph[i][3] :
+            if leaf[dest] == dest : 
+                print i, " is connected to leaf ", dest
+            if height[dest] + 1 > height[i] :
+                height[i] = height[dest] + 1
+                leaf[i] = leaf[dest]
+        if max_height == -1 or  height[i] > height[max_height]:
+            max_height = i
+
+    print "Number of Leaf Nodes = ", leaf_nodes
+    print "Max Heighted Root = ", graph[max_height][0]
+    print "Leaf of Max height = ", leaf[max_height]
+    print "Name of Leaf = ", graph[leaf[max_height]][0]
+    print "Max Height = ", height[max_height], " Index = ", max_height
+
 
 # This function tries to find a composite service
 def composite_query(query) :
 
-    keyword_res = keyword_query(query[0], query[1]).sort(key = itemgetter(2))
+    keyword_res = keyword_query(query[0], query[1])
+    keyword_res.sort(key = lambda x:x[2])
+    keyword_res.reverse()
+
+    #for i in range(10) :
+    #    print "Keword in cos  = ", keyword_res[i][2], "Name = ", keyword_res[i][0]
 
     # Filtering Results
     filtered_res = None
     if len(keyword_res) < 10 :
         filtered_res = keyword_res
     else :
-        filtered_res = keyword_res[0:10]
+        filtered_res = list(keyword_res[0:10])
 
-    visited = []
+    keyword_res.sort(key = lambda x:x[0])
+
+    result = []
+    start_list = []
+
     for i in range(10) :
-        visited.append(False)
+        start_list.append(-1)
 
+    start_found_count = 0
 
+    for i, ser in enumerate(graph) :
+        for j, fil in enumerate(filtered_res) :
+            if ser[0] == fil[0] :
+                start_list[j] = i
+                start_found_count += 1
+                break
+        if start_found_count == 10 :
+            break
+
+    reply = ''
+
+    for i in range(len(start_list)) :
+
+        if start_list[i] < 0 :
+            print "Service Matching Error - Service Index Not Found!!"
+            return
+
+        input_score = filtered_res[i][2]
+        best_output = i
+        visited = [False] * len(graph)
+        parent = [-1] * len(graph)
+        dfs_stack = [start_list[i]]
+        parent[start_list[i]] = start_list[i]
+
+        #print "Starting inp = ", input_score, " Output = ", filtered_res[i][3]
+
+        while len(dfs_stack) > 0 :
+            v = dfs_stack.pop()
+
+            if visited[v] == False :
+                visited[v] = True
+
+                for node in graph[v][3] :
+                    if visited[node] == False :
+                        dfs_stack.append(node)
+                        if parent[node] == -1 :
+                            parent[node] = v
+
+                if keyword_res[v][0] != graph[v][0] :
+                    print "Critical Error - Service Order Mismatch !!"
+                    raise Exception('Critical Error - Service Order Mismatch !!')
+
+                #print "v = ", v, " out = ", keyword_res[v][3]
+
+                if keyword_res[v][3] > keyword_res[best_output][3] :
+                    best_output = v
+
+        if keyword_res[best_output][3] != 0 :
+            if len(reply) != 0 :
+                reply += '|'
+
+            reply += str(input_score) + ',' + str(keyword_res[best_output][3])
+
+            while parent[best_output] != best_output:
+                reply += ',' + str(graph[best_output][0]).strip()
+                best_output = parent[best_output]
+
+            reply += ',' + str(graph[best_output][0]).strip()
+
+    print reply
+    return reply
 
 # Main Function to that keeps listening for input
 if __name__ == '__main__':
@@ -324,6 +419,7 @@ if __name__ == '__main__':
             if len(sys.argv) > 2 and sys.argv[2] == "composite" :
                 print "Constructing Composite Graph"
                 graph = construct_service_graph()
+                #debug_graph()
                 s.bind((HOST, COMPOSITE_PORT))
                 print "Composite Graph Constructed"
             else :
@@ -332,29 +428,36 @@ if __name__ == '__main__':
             s.listen(1)
             print "Server Up and Running!!"
             while True :
-                try :
+                #try :
                     # Receiving Data
                     conn, addr = s.accept()
                     data = conn.recv(10000)
                     if not data :
                         print "No data received"
                         conn.close()
-                        return
+                        continue
 
                     #Spliting data into input and output
                     data = str(data).split('#')
                     print "Request by - ", addr, " Query = ", data
-                    res = combined_query(data)
-                    
-                    reply = ''
-                    for item in res :
-                        reply = reply + item[0] + ','
 
-                    conn.sendall(reply)
-                    conn.close()
+                    if sys.argv[2] == "composite" : 
+                        composite_result = composite_query(data)
+                        conn.sendall(composite_result)
+                        conn.close()
+                    else :
+                        res = combined_query(data)
+                        
+                        reply = ''
+                        for item in res :
+                            reply = reply + item[0] + ','
 
-                except Exception :
-                    print "Problem is Processing Query !!"
+                        conn.sendall(reply)
+                        conn.close()
+
+                #except Exception, e :
+                #    print "Problem in Processing Query !!"
+                #    print e
 
             for result in keyword_res :
                 print result[0], " ", result[1]

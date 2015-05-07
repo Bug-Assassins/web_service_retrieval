@@ -52,18 +52,18 @@
         {
             header('Location:search.php?error=4');
         }
-        else if (!isset($_POST["theta"]))
-        {
-            header('Location:search.php?error=5');
-        }
-        else if (!is_numeric($_POST["theta"]))
-        {
-            header('Location:search.php?error=6');
-        }
+        //else if (!isset($_POST["theta"]))
+        //{
+         //   header('Location:search.php?error=5');
+        //}
+        //else if (!is_numeric($_POST["theta"]))
+        //{
+        //    header('Location:search.php?error=6');
+        //}
         
 		$in = '"'.$_POST["input"].'"';
 		$out = '"'.$_POST["output"].'"';
-		$theta = $_POST["theta"];
+		$theta = 0; //$_POST["theta"];
 		if(!($theta >= 0 && $theta <=1))
 		{
 			header('Location:search.php?error=7');	
@@ -93,6 +93,12 @@
 	//echo "Socket created";
 	$address = '127.0.0.1';
 	$port = 12002;
+	$composite_port = 12010;
+
+	if(isset($_REQUEST['composite']) && $_REQUEST['composite'] == "1")
+	{
+		$port = $composite_port;
+	}
 
 	if(!socket_connect($sock , $address , $port))
 	{
@@ -120,33 +126,52 @@
         socket_close($sock);
         die("Could not send data: [$errorcode] $errormsg \n");
 	}
-	//$shell = "bash main.sh";
-	//$cmd = $shell." ".$in." ".$out." ".$theta;
-	//$output = shell_exec($cmd);
-	//$file = fopen("result.temp","r");
-?>
-	
-	<table id='services'>
-		<tr>
-			<th>Name of Service</th>
-			<!--<th>Input Score</th>
-			<th>Output Score</th>
-			<th>Average</th> -->
-		</tr>
 
-<?php
-	$flag = false;
-	$out = strtok($res, ',');
-	while($out !== false)
+	//echo $res;
+
+	if(isset($_REQUEST['composite']) && $_REQUEST['composite'] == "1")
 	{
-		if($flag === false) echo "<tr>";
-		else echo "<tr class='alt'>";
-		$flag = !($flag);
-
-		echo "<td><a href='docs/". $out ."'>".$out."</a></td>";
-		$out = strtok(',');	
+		$out = explode('|', $res);
+		foreach($out as $val)
+		{
+			$xx = explode(',', $val);
+			echo "<b>Input Score : </b>".$xx[0]."<br/>";
+			echo "<b>Output Score : </b>".$xx[1]."<br/>";
+			echo "<b>Composition : </b><br/>";
+			for ($i = 2; $i < count($xx); $i++)
+			{
+				echo "<a href='docs/". $xx[$i] ."'>".$xx[$i]."</a> <br/>";
+			}
+			echo "<br/><br/><br/>";
+		}
 	}
-?>
-	</table>
+	else
+	{
+		?>
+		<table id='services'>
+			<tr>
+				<th>Name of Service</th>
+				<!--<th>Input Score</th>
+				<th>Output Score</th>
+				<th>Average</th> -->
+			</tr>
+
+			<?php
+				$flag = false;
+				$out = strtok($res, ',');
+				while($out !== false)
+				{
+					if($flag === false) echo "<tr>";
+					else echo "<tr class='alt'>";
+					$flag = !($flag);
+
+					echo "<td><a href='docs/". $out ."'>".$out."</a></td>";
+					$out = strtok(',');	
+				}
+			?>
+		</table>
+		<?php
+	}
+	?>
 </body>
 </html>

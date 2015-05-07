@@ -169,9 +169,13 @@ if (isset($_REQUEST['error']))
     <span>Output</span>
     <input type="text" name="output" id="output"/>
 </label>
-<label>
+<!--<label>
     <span>Cutoff</span>
     <input type="text" name="theta" id="theta"/>
+</label>-->
+<label>
+    <input type="checkbox" name="composite" value="1">
+    <span>Composite</span>
 </label>
 <label>
     <span>&nbsp;</span>

@@ -1,5 +1,5 @@
 \documentclass[12pt, oneside]{book}
-\usepackage[top=1in, bottom=1in, left=1.2in, right=1in, a4paper]{geometry}
+\usepackage[top=0.7in, bottom=0.7in, left=1in, right=0.7in, a4paper]{geometry}
 \title{Automated Retrieval of Semantic Web Services}
 \author{Adarsh Mohata, Ajith P S, Ashish Kedia}
 
@@ -196,7 +196,7 @@ We would like to express our gratitude towards the members of Department of Info
 \vspace{1cm}
 As Web services increasingly become important in area of distributed computing, some of the flaws and limitations of this technology become more and more obvious. One of the flaws is the discovery of Web Services through common methods. Research has been pursued in the field of ”Semantic Web services”. This research is driven by the idea, to describe the functionality of Web services as accurately as possible using natural language as well as ontologies and to create programs automatically out of already existing Web services. \\ \par
 Consideration of the web service interfaces(input/output) is also equally important. It is possible to index web services available on web and find other web services with similar interfaces. Web Service with similar interfaces are likely to replace each other. \\ \par
-This project aims at exploring the various ways of discovering, indexing and searching semantic web services based on their corresponding description documents. \\ \par
+This project aims at exploring the various ways of discovering, indexing and searching semantic web services based on their corresponding description documents. The project also aims to recommend possible compositions of available services to the user which can which can together meet the requirements whenever no suitable service can meet the requirements alone.\\ \par
 \textbf{Keywords : }Web Service Discovery, WSDL, OWL-S, Co-Sine Similarity, Word-Sense Disambiguation
 \pagebreak
 \thispagestyle{empty}
@@ -257,6 +257,8 @@ Table ~\ref{tab: abbv} lists all the common abbreviations used throughout the le
 			RDF & Resource Description Framework \\ \hline
 			WN & Word Net \\ \hline
 			POS & Parts of Speech \\ \hline
+			DAG & Directed Acyclic Graph \\ \hline
+			DFS & Depth First Search \\ \hline
 		\end{tabular}
 	\end{center}
 \end{table}
@@ -310,7 +312,7 @@ After gaining an insight about the popular existing techniques used to discover 
 \end{itemize}
 
 \section{Problem Statement}
-Retrieve description documents of various web services - WSDL and OWLS, available on the Internet and then index them efficiently so as to discover appropriate web services based on the desired service interface specified by the user's query. The system should provide users with a feature that can tune or shortlist the results.
+Retrieve description documents of various web services - WSDL and OWLS, available on the Internet and then index them efficiently so as to discover appropriate web services or a group of web services based on the desired service interface or keywords specified by the user's query. The system should provide users with a feature that can tune or shortlist the results.
 
 \section{Objectives}
 A major part of this work is to come up with techniques that can enhance the existing web service discovery and retrieval methods. The objectives of the project are as follows :
@@ -326,6 +328,7 @@ A major part of this work is to come up with techniques that can enhance the exi
  \item Retrieving user's required interfaces and search parameters
  \item Disambiguating user's query and establishing the context of user's query
  \item Finding similar web services and returning the results to users
+ \item Searching for multiple web services that can be composed together to serve user's need
 \end{itemize}
 We have focused on discovering an appropriate semantic web service(s) for a given application, given the required interfaces i.e., input and output format. We use both vector based method and semantic based context matching. \\
 
@@ -403,6 +406,21 @@ The main idea is basically iterating over the index data-set of all the services
 where, $u_{i} \epsilon \text{ User's Query Context} \forall \text{ i = 0, 1, . . . n}$, $v_{i} \epsilon \text{ Service's Indexed Context} \forall i = 0, 1, . . . m $, $sim()$ denotes similarity between 2 given lemmas. \\ \par
 The semantic similarity of user's query and each of the web service description is computed following which the services are sorted according to maximum similarity.
 
+\section{Searching Composite Services}
+It is often the case that a single service in the database is unable to satisfy user's query complete. In such cases we need to find multiple services that can work together in a given sequence so as to provide the required functionality to the user. In essence the services have to be automatically composed. Service composition has following steps :
+\begin{itemize}
+ \item Searching for suitable web services that can be composed together to act as a single service
+ \item Arrange the different web services in a particular sequence that yields the desired output
+ \item Conversion of data-formats so that output of one service matches the input format expected by the next service in the sequence
+\end{itemize}
+Several solutions to this service composition problem has been proposed based on graphical model of web services \cite{graph_search}, \cite{graph_composition}. In this section a methodology to search for multiple web services that can be composed together to serve to user's using a graph of interconnected web services has been discussed.
+
+\subsection{Constructing Service Interface Graph}
+A DAG (Directed Acyclic Graph) is constructed to model services and the relation between their interfaces. Each node in this graph represents a web service. A node has several incoming and outgoing edges. An edge from node 'A' to node 'B' signifies that the output yielded by service 'A' is similar to the input accepted by service 'B' i.e., service 'A' and 'B' can be composed together. To construct the graph we first compute the equivalent input and output vector of all the service in the database. Then we match the output of each service to the input of every other service i.e., determine the co-sine similarity between the output vector of first service and input vector of second service. If the similarity is found to be greater than a pre-determined cut-off then the two services are connected via an edge from first one to the second. After addition of each edge, the graph is checked for cycles. If any cycles are found to exist in the graph, the recently added edge edge is discarded. The main objective is to model the services such that service composition problem can be converted into a simple graph traversal problem. Thus, it is essential to have an acyclic graph. The similarity cut-off for adding edges is chosen to be 0.9. A high value is chosen to ensure that there is almost a perfect match between the interfaces, This cutoff can be determined dynamically based on the average similarity of interfaces and several other domain-dependent factors.
+
+\subsection{Executing Service Composition Query}
+Once the graph is constructed, it has to be traversed for each query. Firstly, an input and output vector corresponding to the user's query is computed. Then a keyword based query as described in previous section is executed. The resultant services are sorted according to the input similarity - and top results (top 10) are filtered. This gives the top 10 start-points of potential composition. For each of these inputs, the graph is traversed using the well known DFS (Depth First Search) Algorithm starting from the input service as source. For every node visited, the similarity between the node's output vector and user's query output vector is determined. Among all the nodes visited, the node with best output vector is selected. The path between the corresponding source node and the node with best output yields the best composition possible for the corresponding source service.
+
 \chapter{Implementation Details}
 This chapter outlines the implementation details of the system.
 \section{Development Environment}
@@ -446,6 +464,7 @@ For indexation purpose, we define 7 categories (or dimensions) of Web Services a
 \begin{table}[h]
 	\begin{center}
 		\caption{\textbf{Sample Input Keywords Used for each Categories}}
+		\label{tab: sample_keyword_input}
 		\begin{tabular}{| p{0.2\textwidth} | p{0.6\textwidth} |}
 			\hline
 			\multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} \\
@@ -461,12 +480,12 @@ For indexation purpose, we define 7 categories (or dimensions) of Web Services a
 			Weapon & Ballistic, Destruct, Device, Missile, Projectile, Weapon, State, Power\\ \hline
 		\end{tabular}
 	\end{center}
-	\label{tab: sample_keyword_input}
 \end{table}
 
 \begin{table}[h!]
 	\begin{center}
 		\caption{\textbf{Sample Output Keywords Used for each Categories}}
+		\label{tab: sample_keyword_output}
 		\begin{tabular}{| p{0.2\textwidth} | p{0.6\textwidth} |}
 			\hline
 			\multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} \\
@@ -482,7 +501,6 @@ For indexation purpose, we define 7 categories (or dimensions) of Web Services a
 			Weapon & Arrow, Price, Ship, Battle, Projectile, Weapon, State, Power, Technology\\ \hline
 		\end{tabular}
 	\end{center}
-	\label{tab: sample_keyword_output}
 \end{table}
 \par
 Following a step-wise process of what we have implemented for indexing web services :
@@ -519,6 +537,18 @@ We obtain the desired service interface from the user. For the requested interfa
 
 \subsection{Querying Using Semantic Approach}
 From the user's given query, a query context is established by disambiguating the words in the query similar to the indexing process using wordnet. Once a context is established, the list of all the indexed documents is traversed and the query context is matched with each of them. The similarity score is recorded and the OWLS documents are sorted accordingly. After that, the service is sorted according to it's similarity score and a rank is assigned to each service. Once a rank is assigned, the final list of services is computed by considering both the lists. Equal weightage is given to each rank (which can be tuned) and thus average of both ranks is taken to compute the final rank.
+
+\subsection{Graph Construction based on Service Interface}
+An in-memory graph of services and their interface dependency is constructed. Adjacency List representation of graph has been used. Each Node contains following data:
+\begin{itemize}
+ \item Service Name or Service Identifier
+ \item Vector representation of service interface - input and output
+ \item A list of nodes to which the current node has an outgoing edge
+\end{itemize}
+The graph is constructed as discussed in the previous chapter. Graph Construction takes place only once when the server starts for the first time. After that the graph resides in main memory and same graph is used for each query.
+
+\subsection{Composition Query}
+When a composition query is received - an iterative version of DFS is implemented to traverse the constructed graph. The graph is traversed multiple times - (10 times in our implementation) one for each possible source (first service in composition). A simple python list is used as a stack. Once the best output service is determined using DFS it is also essential to determine the path from the source node to the node with best output similarity. This is done by keeping a record of node hierarchy while traversing the graph. For the said purpose, we store the parent node (the node that discovered the child node during DFS traversal) for each node in a separate list. The parent of the source node is assigned to be the source node itself. Thus once the best output service is determined, find the composition is as simple as iterating over the list of parent node recursively until source is reached.
 
 \section{Results and Analysis}
 The results that we obtain are very encouraging. We are able to obtain very relevant web services given an interface. We have obtained this results with a very small set of keywords in each field (average 40 each). As such, with a large set of keywords in each category we should be able obtain much better results.
@@ -561,6 +591,7 @@ The complexity analysis of the system for different events has been illustrated 
  Let the number of keywords in each category, on an average be C. Since there are 7 categories, the number of keywords in the data set is $7C$. Our algorithm will compare each keyword in our data set with the input and output description. Thus the time taken will be proportional to $7C$. Thus Step 2 has $ \mathcal{O}(C)$ time complexity. \\ \par
  Thus the whole process of indexing a single OWLS document takes $\mathcal{O}(C)$ time.
  \item \textbf{Indexing the whole OWLS dataset} - To index the whole repository of web services we need to index each and every OWLS document by applying the algorithm mentioned before. Let the number of OWLS documents that the system has in it's repository be $N$. Since the algorithm to index a single OWLS document takes $\mathcal{O}(C)$ time (As shown in the previously), the algorithm to index the whole repository will take $\mathcal{O}(NC)$ time complexity.
+ \item \textbf{Constructing Composition Graph} : The vectors corresponding to service interfaces are already available from indexing. The input vector of each service is matched with output vector of every other service. Thus the complexity of graph construction is $\mathcal{O}(N^{2})$, where $N$ is the number of service. The check for cycle formation is linear in time and thus it doesn't add anything to the complexity. However, the graph is constructed only once when the server is started and thus we can afford it to be slower. Whenever a new service is added to the database i.e., A new node is appended to the graph, it's input and output has to be matched with every other service and thus the complexity of adding new node will be $\mathcal{O}(N)$.
  \item \textbf{Complexity of searching} - To search for a similar web service, the user will supply the input and the output he/she expects. Our algorithm will work in the following way :
  \begin{enumerate}
   \item Create a pair of vectors representing a pseudo OWLS file document the input and output supplied represents.
