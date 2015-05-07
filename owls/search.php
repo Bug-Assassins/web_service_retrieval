@@ -174,7 +174,7 @@ if (isset($_REQUEST['error']))
     <input type="text" name="theta" id="theta"/>
 </label>-->
 <label>
-    <input type="checkbox">
+    <input type="checkbox" name="composite" value="1">
     <span>Composite</span>
 </label>
 <label>

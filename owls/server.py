@@ -383,7 +383,7 @@ def composite_query(query) :
                     best_output = v
 
         if keyword_res[best_output][3] != 0 :
-            if len(res) != 0 :
+            if len(reply) != 0 :
                 reply += '|'
 
             reply += str(input_score) + ',' + str(keyword_res[best_output][3])
