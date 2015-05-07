@@ -87,11 +87,11 @@
 \vspace{1cm}
 \emph{Submitted by} \\
 \vspace{1cm}
-\textbf{Adarsh Mohata - 12IT03 - $V$ Sem B.Tech} \\
+\textbf{Adarsh Mohata - 12IT03 - $VI$ Sem B.Tech} \\
 \vspace{4mm}
-\textbf{Ajith P S - 12IT04 - $V$ Sem B.Tech} \\
+\textbf{Ajith P S - 12IT04 - $VI$ Sem B.Tech} \\
 \vspace{4mm}
-\textbf{Ashish Kedia - 12IT14 - $V$ Sem B.Tech} \\
+\textbf{Ashish Kedia - 12IT14 - $VI$ Sem B.Tech} \\
 \vspace{1cm}
 \emph{in partial fulfillment for the award of the degree} \\
 \vspace{7mm}
@@ -185,7 +185,7 @@ Date: \underline{\hspace{5cm}}
 \vspace{2cm}
 \end{center}
 We have put our best efforts in this project. However, it would not have been possible without the kind support and help of many individuals. We would like to extend our sincere thanks to all of them.\\ \par
-We are highly indebted to \textbf{Sowmya Kamath Ma'am} for his guidance and constant supervision as well as for providing necessary information regarding the project and also for their support in completing the project during it's initial phase. We would specially like to thank her for providing us with sample data-set to carry out our experiments.\\ \par
+We are highly indebted to \textbf{Mrs. Sowmya Kamath} for her guidance and constant supervision as well as for providing necessary information regarding the project and also for their support in completing the project during it's initial phase. We would specially like to thank her for providing us with sample data-set to carry out our experiments.\\ \par
 We would like to express our gratitude towards the members of Department of Information Technology for their kind co-operation and encouragement which helped us in the completion of this project. Our thanks and appreciations also go to our colleagues in other groups in developing the project and people who have willingly helped us out with their abilities.
 
 \pagebreak \textcolor{white}{text} \pagebreak
@@ -194,7 +194,7 @@ We would like to express our gratitude towards the members of Department of Info
 	\textbf{ \huge Abstract}
 \end{center}
 \vspace{1cm}
-As Web services increasingly become important in area of distributed computing, some of the flaws and limitations of this technology become more and more obvious. One of these flaw is the discovery of Web Services through common methods. Research has been pursued in the field of ”Semantic Web services”. This research is driven by the idea, to describe the functionality of Web services as accurately as possible using natural language as well as ontologies and to create programs automatically out of already existing Web services. \\ \par
+As Web services increasingly become important in area of distributed computing, some of the flaws and limitations of this technology become more and more obvious. One of the flaws is the discovery of Web Services through common methods. Research has been pursued in the field of ”Semantic Web services”. This research is driven by the idea, to describe the functionality of Web services as accurately as possible using natural language as well as ontologies and to create programs automatically out of already existing Web services. \\ \par
 Consideration of the web service interfaces(input/output) is also equally important. It is possible to index web services available on web and find other web services with similar interfaces. Web Service with similar interfaces are likely to replace each other. \\ \par
 This project aims at exploring the various ways of discovering, indexing and searching semantic web services based on their corresponding description documents. \\ \par
 \textbf{Keywords : }Web Service Discovery, WSDL, OWL-S, Co-Sine Similarity, Word-Sense Disambiguation
@@ -288,7 +288,7 @@ Christian Platzer and Schahram Dustdar \cite{vector} have used a Vector Space Se
 Cuzzocrea et. al \cite{advance_graph} considers both internal structure and component services. They describe a method for using graph-based representation of composite OWL-S processes. They also proposed an algorithm that matches over such graph-based representations and computes their degree of matching by combining the similarity of the atomic services they comprise and the similarity of the control flow among them.
 
 \subsection{Natural Language Processing}
-Jordy Sangers et. al \cite{nlp} have used techniques like part-of-speech tagging, lemmatization, and word sense disambiguation to determine the senses of the relevant words gathered from web service descriptions and user queries and then carry out a matching process between user's query and indexed web services. The architecture of such framework has been illustrated in figure ~\ref{img: swsd}. This method is promising in a sense that a context aware seach is performed i.e., actual user's need is matched with services that performs required computation.
+Jordy Sangers et. al \cite{nlp} have used techniques like part-of-speech tagging, lemmatization, and word sense disambiguation to determine the senses of the relevant words gathered from web service descriptions and user queries and then carry out a matching process between user's query and indexed web services. The architecture of such framework has been illustrated in figure ~\ref{img: swsd}. This method is promising in a sense that a context aware search is performed i.e., actual user's need is matched with services that performs required computation.
 \begin{figure}[h]
  \centering
  \includegraphics[width=\textwidth]{pics/swsd.png}
@@ -305,7 +305,6 @@ After gaining an insight about the popular existing techniques used to discover 
 \begin{itemize}
  \item Public repositories of UDDI registries are now obsolete. Modern web services are described using ontology based OWLS and RDF.
  \item Vector Space Search seem like a promising approach, however it does not consider service interfaces or service semantics
- \item Using techniques like Natural Language Processing was out of the project's scope given the time constraint
  \item We decided to build a prototype system using conceptual indexation of service interfaces
  \item We also had an intuition that vector space search along with cosine similarity would yield a better result
 \end{itemize}
@@ -361,7 +360,7 @@ We create 2 vectors namely $V_{i}$ and $V_{o}$. Vector $V_{i}$ contains the inpu
 We apply the same procedure to the \textbf{$<<$profile:hasoutput$>>$} element of the OWLS document and obtain the vector $V_{o}$. Thus we obtain a pair of vectors which represents an OWLS document in a vector space of 7 dimensions where each dimension is a concept. We repeated this procedure for each and every OWLS file in our data set and the resulting data contains vector representation of every OWLS document that we have in our data set. This concludes the indexing of OWLS documents and thus the corresponding web service.
 
 \section{Indexing Description Files using Word Senses}
-The overall functionality of a web-service is typically mentioned as a part of the text-description document in natural languages. They tend to give more insight about the actual functionality provided by the web service. We used techniques like lemmatization and parts of speech tagging to determine the multiple meaning of the words in those description document. We used a simple word sense disambiguation algorithm to choose the right meanings of all the words in the description and then establish a context of the web service which can be used for matching the service with user's requirements. The algorithm simply chooses the meaning which is conceptually most similar to the already established context (i.e., already disambiguated words). To find similarity between words we use the JCN Similarity algorithm ~\cite{jcn}. As such the final context has the set of most similar lemmas. We index each web service with using it's corresponding set of Synset.
+The overall functionality of a web-service is typically mentioned as a part of the text-description document in natural languages. They tend to give more insight about the actual functionality provided by the web service. We used techniques like lemmatization and parts of speech tagging to determine the multiple meaning of the words in those description document. We used a simple word sense disambiguation algorithm to choose the right meanings of all the words in the description and then establish a context of the web service which can be used for matching the service with user's requirements. The algorithm simply chooses the meaning which is conceptually most similar to the already established context (i.e., already disambiguated words). To find similarity between words we use the JCN Similarity algorithm ~\cite{jcn}. As such the final context has the set of most similar lemmas. We index each web service using its corresponding set of Synset.
 
 \section{Searching Web Services}
 We intended to create a framework through which a user could retrieve an OWLS document based on his/her needs as provided through his/her inputs. This input is nothing but the interface of the web service. For that we needed to have the capability of searching our data set, given the user's query. We have used 2 approaches for two different kinds of indexing that we perform :
@@ -435,7 +434,7 @@ As mentioned in the methodology section, the new method of describing Web Servic
 To demonstrate the reliability of our concept and to show how an application for the presented architecture may look like, we implemented a prototype search engine. We designed our application with a Web front-end to offer the possibility of using its functions and evaluate the produced results. We allowed the user to either enter input/output for a desired service or upload a corresponding OWL-S file. We search for web services similar to the uploaded OWLS files or services that have similar interfaces (input/output). A sample screen-shot of the search form has been illustrated in Figure ~\ref{fig: search} \\ \par
 \begin{figure}[h]
  \centering
- \includegraphics[width=\textwidth]{pics/search.png}
+ \includegraphics[width=\textwidth]{pics/search1.png}
  \caption{\textbf{Screen-shot of Search Page}}
  \label{fig: search}
 \end{figure}
@@ -508,7 +507,7 @@ for concept in concept-list #concept list is the list of 7 concept
 \end{enumerate}
 
 \subsection{Indexing using Semantics Techniques}
-Word Net \cite{wordnet} was used to determine the synsets of the words used in the description documents of the services and to determine the similarity between various synsets. Word Net provides as easy to use interface for python programming language via nltk package. The main functions that are relevant for this project are \textbf{synsets$\left( \right)$} and \textbf{jcn\_similarity $\left( \right)$ }. Again, Python's Beautiful Soup was used to parse OWLS document and then extract the text description of the web service. After that each word in the test description is mapped to a set of it's lemmas using wordnet. Then the word's meaning is disambiguated using a simple algorithm :
+Word Net \cite{wordnet} was used to determine the synsets of the words used in the description documents of the services and to determine the similarity between various synsets. Word Net provides an easy to use interface for python programming language via nltk package. The main functions that are relevant for this project are \textbf{synsets$\left( \right)$} and \textbf{jcn\_similarity $\left( \right)$ }. Again, Python's Beautiful Soup was used to parse OWLS document and then extract the text description of the web service. After that each word in the test description is mapped to a set of it's lemmas using wordnet. Then the word's meaning is disambiguated using a simple algorithm :
 \begin{equation}
  \text{selected sense} = max \sum sim(s_{j}, sc_{i})
 \end{equation}
@@ -519,10 +518,10 @@ We sort the words according to the number of synset in their mapped list. If no 
 We obtain the desired service interface from the user. For the requested interface (input and output), we create a request vector $R_i$ and $R_{o}$ of concepts using the same vector construction algorithm described in the previous section. Cosine similarity is found between $R_{i}$, $S_{i}$ and $R_{o}$, $S_{o}$ using a simple Python script by iterating through all the vectors of concepts in our dataset. We filter the results above a certain threshold and store the result in a temporary file.  Threshold value can be set by the user. But, threshold value greater than 0.7 is recommended for the retrieval of relevant services. A default value of 0.8 is used. Ranks are assigned to each of the sorted service description document.
 
 \subsection{Querying Using Semantic Approach}
-From the user's given query, a query context is established by disambiguating the words in the query similar to the indexing process using wordnet. Once a context is established, The list of all the indexed documents is traversed and the query context is matched with each. The similarity score is recorded and the OWLS documents are sorted accordingly. After that the service is sorted according to it's similarity score and a rank is assigned to each service. Once a rank is assigned the final list of services is computed by considering both the lists. Equal weightage is given to each rank (which can be tuned) and thus average is taken of both rank to compute the final rank.
+From the user's given query, a query context is established by disambiguating the words in the query similar to the indexing process using wordnet. Once a context is established, the list of all the indexed documents is traversed and the query context is matched with each of them. The similarity score is recorded and the OWLS documents are sorted accordingly. After that, the service is sorted according to it's similarity score and a rank is assigned to each service. Once a rank is assigned, the final list of services is computed by considering both the lists. Equal weightage is given to each rank (which can be tuned) and thus average of both ranks is taken to compute the final rank.
 
 \section{Results and Analysis}
-The results that we obtain are very encouraging. We are able to obtain very relevant web services given an interface. We have obtained this results with a very small set of keywords in each field (average 40 each). As such, with a large set of keywords in each category we should be able obtain a much better results.
+The results that we obtain are very encouraging. We are able to obtain very relevant web services given an interface. We have obtained this results with a very small set of keywords in each field (average 40 each). As such, with a large set of keywords in each category we should be able obtain much better results.
 
 \subsection{Sample Result}
 A sample result set is illustrated in Table ~\ref{tab: sample_result}.
@@ -544,7 +543,7 @@ A sample result set is illustrated in Table ~\ref{tab: sample_result}.
 A screen shot of the sample result is also added. See Figure ~\ref{fig: result_screen}.
 \begin{figure}[H]
  \centering
- \includegraphics[width=\textwidth]{pics/results.png}
+ \includegraphics[width=\textwidth]{pics/results1.png}
  \caption{\textbf{Screen-shot of Result Page}}
  \label{fig: result_screen}
 \end{figure}
@@ -584,7 +583,7 @@ We have developed a basic search engine that uses only service interfaces. Our r
 \section{Automatic Keyword Retrieval}
 We manually indexed a set of keywords relevant to each category namely - economy, education, food, medical, travel, weapon and communication. However for a very large and diverse set of web services, it is not feasible to manually index appropriate keywords. One can make use of freely available repositories like Wordlon to get the keywords related to a specific category. Moreover the keyword list should be dynamic i.e., the system should automatically learn new keywords and update the list. This can be achieved using machine learning techniques. A part of our problem can be modeled as a well known classification problem in the area of Machine Learning.
 \section{Considering Other Parameters}
-Currently our system constructs the appropriate vectors using only the words specified in the interface (input / output) of the web service. Better results could be obtained if we consider other parameters like functions and meta-data of a web services.
+Currently our system constructs the appropriate vectors using only the words specified in the interface (input / output) of the web service as well as based on its non-functional descriptions. Better results could be obtained if we consider other parameters like functions and meta-data of web services.
 \section{Hybrid Approach with Graph Matching}
 It is our intuition that better results can be obtained using a graph based assignment and matching algorithms. However, the current system only uses co-sine similarity approach. Both methods can be implemented and best one or an average value of similarity from both methods can be considered. We can also specify weight-age to the output of each algorithm and tune the weight-age depending on the need of the user.
 
